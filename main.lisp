@@ -63,8 +63,8 @@
               (aref rbuf head) r
               head (mod (1+ head) len))
         (let ((tail (mod (+ head (unit-conf unit)) len)))
-          (values (aref lbuf tail)
-                  (aref rbuf tail)))))))
+          (values (+ l (* 0.2 (aref lbuf tail)))
+                  (+ r (* 0.2 (aref rbuf tail)))))))))
 
 (defparameter *unit-root*
   (make-unit :sources (make-unit :sources (make-unit :sources (list (make-unit :sources nil
@@ -79,7 +79,7 @@
                                                      :proc-fn (make-mixer)
                                                      :conf nil)
                                  :gain 0.6 :pan 0
-                                 :proc-fn (make-wave-shaper (lambda (v) (expt 2 v)))
+                                 :proc-fn (make-wave-shaper (lambda (v) v))
                                  :conf 1)
              :gain 1 :pan 0
              :proc-fn (make-delay 2)
