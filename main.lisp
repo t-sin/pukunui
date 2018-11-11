@@ -42,18 +42,29 @@
             (incf mr r))
       :finally (return (values ml mr)))))
 
+(defun make-wave-shaper (fn)
+  (lambda (unit tick)
+    (declare (ignorable unit tick))
+    (multiple-value-bind (l r)
+        (proc-unit (unit-sources unit) tick)
+      (values (* (unit-conf unit) (funcall fn l))
+              (* (unit-conf unit) (funcall fn r))))))
+
 (defparameter *unit-root*
-  (make-unit :sources (list (make-unit :sources nil
-                                       :gain 0.3 :pan 0
-                                       :proc-fn (make-sine)
-                                       :conf 440)
-                            (make-unit :sources nil
-                                       :gain 0.3 :pan 0
-                                       :proc-fn (make-sine)
-                                       :conf 880))
+  (make-unit :sources (make-unit :sources (list (make-unit :sources nil
+                                                           :gain 1 :pan 0
+                                                           :proc-fn (make-sine)
+                                                           :conf 440)
+                                                (make-unit :sources nil
+                                                           :gain 1 :pan 0
+                                                           :proc-fn (make-sine)
+                                                           :conf 880))
+                                 :gain 1 :pan 0
+                                 :proc-fn (make-mixer)
+                                 :conf nil)
              :gain 0.6 :pan 0
-             :proc-fn (make-mixer)
-             :conf nil))
+             :proc-fn (make-wave-shaper (lambda (v) (expt 2 v)))
+             :conf 1))
 
 (defun start-pa ()
   (pa:with-audio
