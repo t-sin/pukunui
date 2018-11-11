@@ -50,21 +50,40 @@
       (values (* (unit-conf unit) (funcall fn l))
               (* (unit-conf unit) (funcall fn r))))))
 
+(defun make-delay (size)
+  (let* ((len (floor (* +sample-rate+ size)))
+         (lbuf (make-array len :initial-element 0.0))
+         (rbuf (make-array len :initial-element 0.0))
+         (head 0))
+    (lambda (unit tick)
+      (declare (ignorable unit tick))
+      (multiple-value-bind (l r)
+          (proc-unit (unit-sources unit) tick)
+        (setf (aref lbuf head) l
+              (aref rbuf head) r
+              head (mod (1+ head) len))
+        (let ((tail (mod (+ head (unit-conf unit)) len)))
+          (values (aref lbuf tail)
+                  (aref rbuf tail)))))))
+
 (defparameter *unit-root*
-  (make-unit :sources (make-unit :sources (list (make-unit :sources nil
-                                                           :gain 1 :pan 0
-                                                           :proc-fn (make-sine)
-                                                           :conf 440)
-                                                (make-unit :sources nil
-                                                           :gain 1 :pan 0
-                                                           :proc-fn (make-sine)
-                                                           :conf 880))
-                                 :gain 1 :pan 0
-                                 :proc-fn (make-mixer)
-                                 :conf nil)
-             :gain 0.6 :pan 0
-             :proc-fn (make-wave-shaper (lambda (v) (expt 2 v)))
-             :conf 1))
+  (make-unit :sources (make-unit :sources (make-unit :sources (list (make-unit :sources nil
+                                                                               :gain 1 :pan 0
+                                                                               :proc-fn (make-sine)
+                                                                               :conf 440)
+                                                                    (make-unit :sources nil
+                                                                               :gain 1 :pan 0
+                                                                               :proc-fn (make-sine)
+                                                                               :conf 880))
+                                                     :gain 1 :pan 0
+                                                     :proc-fn (make-mixer)
+                                                     :conf nil)
+                                 :gain 0.6 :pan 0
+                                 :proc-fn (make-wave-shaper (lambda (v) (expt 2 v)))
+                                 :conf 1)
+             :gain 1 :pan 0
+             :proc-fn (make-delay 2)
+             :conf 4000))
 
 (defun start-pa ()
   (pa:with-audio
