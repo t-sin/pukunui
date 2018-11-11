@@ -1,0 +1,71 @@
+(defpackage #:pukunui
+  (:use #:cl)
+  (:export #:start-pa))
+(in-package #:pukunui)
+
+(defparameter +frames-per-buffer+ 8192)
+(defparameter +sample-rate+ 44100.0D0)
+
+(defstruct unit
+  sources gain pan proc-fn conf)
+
+(defun proc-pan (l r pan)
+  (values (* l (- (/ pan 2.0) 0.5))
+          (* r (+ (/ pan 2.0) 0.5))))
+
+(defun proc-unit (unit tick)
+  (let ((gain (unit-gain unit))
+        (pan (unit-pan unit)))
+    (multiple-value-bind (l r)
+        (funcall (unit-proc-fn unit) unit tick)
+      (proc-pan (* l gain) (* r gain) pan))))
+              
+
+(defun make-sine ()
+  (let ((angle 0))
+    (lambda (unit tick)
+      (declare (ignorable unit tick))
+      (let ((val (sin angle)))
+        (incf angle (* (/ (unit-conf unit) +sample-rate+) PI))
+        (values val val)))))
+
+(defun make-mixer ()
+  (lambda (unit tick)
+    (declare (ignorable unit tick))
+    (loop
+      :for u :in (unit-sources unit)
+      :with ml := 0
+      :with mr := 0
+      :do (multiple-value-bind (l r)
+              (proc-unit u tick)
+            (incf ml l)
+            (incf mr r))
+      :finally (return (values ml mr)))))
+
+(defparameter *unit-root*
+  (make-unit :sources (list (make-unit :sources nil
+                                       :gain 0.3 :pan 0
+                                       :proc-fn (make-sine)
+                                       :conf 440)
+                            (make-unit :sources nil
+                                       :gain 0.3 :pan 0
+                                       :proc-fn (make-sine)
+                                       :conf 880))
+             :gain 0.6 :pan 0
+             :proc-fn (make-mixer)
+             :conf nil))
+
+(defun start-pa ()
+  (pa:with-audio
+    (pa:with-default-audio-stream (s 0 2
+                                     :frames-per-buffer +frames-per-buffer+
+                                     :sample-rate +sample-rate+)
+      (let ((buffer (make-array (* 2 +frames-per-buffer+) :initial-element 0.0)))
+        (loop
+          (loop
+            :for n :from 0 :below +frames-per-buffer+
+            :do (multiple-value-bind (l r)
+                    (proc-unit *unit-root* 0)
+                  (setf (aref buffer (* 2 n)) l
+                        (aref buffer (1+ (* 2 n))) r)))
+          (pa:write-stream s buffer))))))
