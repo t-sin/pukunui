@@ -3,10 +3,10 @@
   (:export #:start-pa))
 (in-package #:pukunui)
 
-(defparameter +frames-per-buffer+ 8192)
+(defparameter +frames-per-buffer+ 28192)
 (defparameter +sample-rate+ 44100.0D0)
 
-(defparameter *bpm* 100)
+(defparameter *bpm* 120)
 
 (defun bpm->sec (bpm)
   (/ bpm 60))
@@ -77,62 +77,56 @@
               (aref rbuf head) r
               head (mod (1+ head) len))
         (let ((tail (mod (+ head (unit-conf unit)) len)))
-          (values (+ l (* 0.2 (aref lbuf tail)))
-                  (+ r (* 0.2 (aref rbuf tail)))))))))
+          (values (+ l (* 0.4 (aref lbuf tail)))
+                  (+ r (* 0.4 (aref rbuf tail)))))))))
+
+(defun generate-adsr (tick start-tick state conf)
+  (let* ((eplaced (- tick start-tick))
+         (a (getf conf :a))
+         (d (getf conf :d))
+         (s (getf conf :s))
+         (r (getf conf :r)))
+    (cond ((and (member state '(nil :a)) (< eplaced a))
+           (values :a (/ eplaced a)))
+          ((and (member state '(:a :d)) (< eplaced (+ a d)))
+           (values :d (- 1 (* (- 1 s) (/ (- eplaced a) d)))))
+          ((and (member state '(:d :s)) (>= eplaced (+ a d)))
+           (values :s s))
+          (t (values nil 0)))))
 
 (defun make-drum-machine (sequence)
   (let ((start 0)
-        (note 1)
-        (state nil))
-    (unless (= (length sequence) 16)
-      (warn "sequence length is not 16."))
-    (flet ((adsr (tick conf)
-             (let* ((eplaced (- tick start))
-                    (a (getf conf :a))
-                    (d (getf conf :d))
-                    (s (getf conf :s))
-                    (r (getf conf :r)))
-               (cond ((and (member state '(nil :a)) (< eplaced a))
-                      (setf state :a)
-                      (/ (- tick start) a))
-                     ((and (member state '(:a :d)) (< eplaced (+ a d)))
-                      (setf state :d)
-                      (+ (/ (- eplaced a) d) s))
-                     ((and (member state '(:d :s)) (> eplaced (+ a d)))
-                      (setf state :s)
-                      s)
-                     ((and (eq state :r) (<= eplaced r))
-                      (setf state :r)
-                      (+ s (- 1 (/ eplaced r))))
-                     (t
-                      (setf state nil)
-                      0)))))
-      (lambda (unit tick)
-        (declare (ignorable unit tick))
-        (let ((dtick (* +sample-rate+ (/ 60 *bpm*))))
-          (cond ((and (null state) (>= tick (mod tick (* note dtick))))
-                 ;; note on
-                 (let ((a-zero (zerop (getf (unit-conf unit) :a)))
-                       (d-zero (zerop (getf (unit-conf unit) :d))))
-                   (setf state (cond ((and a-zero d-zero) :s)
-                                     (a-zero :d)
-                                     (t :a))
-                         start tick)))
-                ((>= (- tick start) (* +sample-rate+ 0.25))
-                 ;; note off
-                 (setf state :r
-                       start tick)))
-          (setf note (mod note (1+ 16)))
-          (let ((val (adsr tick (unit-conf unit))))
-            (values val val)))))))
+        (note 0)
+        (state :off))
+    (lambda (unit tick)
+      (declare (ignorable unit tick))
+      ;; note on
+      (when (= (mod tick (floor (* +sample-rate+ (/ 60 *bpm*)))) 0) ;; wait
+        (when (nth note sequence) 
+          (setf state :on
+                start tick))
+        (setf note (mod (1+ note) (length sequence))))
+      ;; note off
+      (when (and (eq state :on)
+                 (= (- tick start) (floor (+ start (* +sample-rate+ 0.031)))))
+        (setf state :off))
+      (if (eq state :on)
+          (values 1.0 1.0)
+          (values 0.0 0.0)))))
 
-(defparameter *unit-root* (make-unit :sources  (make-unit :sources :nil
-                                                          :gain 0.4 :pan 0
-                                                          :proc-fn (make-drum-machine '())
-                                                          :conf '(:a 500 :d 500 :s 1 :r 100))
-                                     :gain 0.8 :pan 0
+(defparameter *sequencer* (make-unit :sources  (make-unit :sources :nil
+                                                          :gain 1 :pan 0
+                                                          :proc-fn (make-drum-machine '(t nil t nil t nil t t))
+                                                          :conf '(:a 6000 :d 2500 :s 0.021 :r 100))
+                                     :gain 1 :pan 0
                                      :proc-fn (make-sine)
                                      :conf 440))
+
+(defparameter *unit-root*
+  (make-unit :sources *sequencer*
+             :gain 1 :pan 0
+             :proc-fn (make-delay 3)
+             :conf 10000))
 
 ;; (defparameter *unit-root*
 ;;   (make-unit :sources (make-unit :sources (make-unit :sources (list (make-unit :sources *sequencer*
