@@ -178,16 +178,19 @@
 (defparameter *sequencer* (make-unit :sources  (make-unit :sources :nil
                                                           :gain 1 :pan 0
                                                           :proc-fn (make-drum-machine '(t nil t nil t nil t t))
-                                                          :conf '(:a 6000 :d 2500 :s 0.021 :r 100))
+                                                          :conf '(:a 3000 :d 2500 :s 0.021 :r 100))
                                      :gain 1 :pan 0
-                                     :proc-fn (make-sine)
+                                     :proc-fn (make-square)
                                      :conf 440))
 
 (defparameter *unit-root*
-  (make-unit :sources *sequencer*
+  (make-unit :sources (make-unit :sources *sequencer*
+                                 :gain 0.7 :pan 0
+                                 :proc-fn (make-delay 3)
+                                 :conf 10000)
              :gain 1 :pan 0
-             :proc-fn (make-delay 3)
-             :conf 10000))
+             :proc-fn (make-filter)
+             :conf (list :type :lp :freq 500 :gain 0.5 :q 6)))
 
 ;; (defparameter *unit-root*
 ;;   (make-unit :sources (make-unit :sources (make-unit :sources (list (make-unit :sources *sequencer*
@@ -201,7 +204,7 @@
 ;;                                                      :gain 1 :pan 0
 ;;                                                      :proc-fn (make-mixer)
 ;;                                                      :conf nil)
-;;                                  :gain 0.6 :pan 0
+;;                                  :gain 1 :pan 0
 ;;                                  :proc-fn (make-wave-shaper (lambda (v) v))
 ;;                                  :conf 1)
 ;;              :gain 1 :pan 0
