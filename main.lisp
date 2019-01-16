@@ -38,6 +38,22 @@
         (incf angle (* (/ (unit-conf unit) +sample-rate+) PI))
         (if (null src)
             (values val val)
+            ;; modulation
+            (multiple-value-bind (l r)
+                (proc-unit src tick)
+              (values (* l val)
+                      (* r val))))))))
+
+(defun make-square ()
+  (let ((angle 0))
+    (lambda (unit tick)
+      (declare (ignorable unit tick))
+      (let ((val (if (< angle 0.5) 1 -1))
+            (src (unit-sources unit)))
+        (setf angle (mod (+ angle (/ (unit-conf unit) +sample-rate+)) 1))
+        (if (null src)
+            (values val val)
+            ;; modulation
             (multiple-value-bind (l r)
                 (proc-unit src tick)
               (values (* l val)
