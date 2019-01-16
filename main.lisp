@@ -18,8 +18,8 @@
   sources gain pan proc-fn conf)
 
 (defun proc-pan (l r pan)
-  (values (* l (- (/ pan 2.0) 0.5))
-          (* r (+ (/ pan 2.0) 0.5))))
+  (values (* l (/ (- 1 pan) 2.0))
+          (* r (/ (+ 1 pan) 2.0))))
 
 (defun proc-unit (unit tick)
   (let ((gain (unit-gain unit))
