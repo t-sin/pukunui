@@ -100,24 +100,48 @@
   (ok (= (tri x) expected)))
 
 (deftest triangle-function
-  (testing "values in a period"
+  (testing "peek values in a period"
     (test-tri 0 0)
-    (test-tri (/ PI 4) 0.5)
+    (test-tri (/ 1 4) 1)
+    (test-tri (/ 1 2) 0)
+    (test-tri (/ 3 4) -1)
+    (test-tri 1 0))
 
-    (test-tri PI/2 1)
-    (test-tri (* (/ 3 4) PI) 0.5)
+  (testing "values in a period"
+    (test-tri (/ 1 8) 0.5)
+    (test-tri (/ 3 8) 0.5)
+    (test-tri (/ 5 8) -0.5)
+    (test-tri (/ 7 8) -0.5))
 
-    (test-tri PI 0)
-    (test-tri 3PI/2 -1)
-    (test-tri 2PI 0)))
+  (testing "values out of period"
+    (testing "minus side of range"
+      (test-tri (- (/ 1 4)) -1)
+      (test-tri (- (/ 1 2)) 0))
+    (testing "plus side of range"
+      (test-tri (1+ (/ 1 4)) 1)
+      (test-tri (1+ (/ 1 2)) 0))))
 
 (defun test-saw (x expected)
   (ok (= (saw x) expected)))
 
 (deftest sawtooth-function
-  (testing "values in a period"
+  (testing "peek values in a period"
     (test-saw 0 0)
-    (test-saw PI/2 0.5)
-    (test-saw PI -1)
-    (test-saw 3PI/2 -0.5)
-    (test-saw 2PI 0)))
+    (test-saw (/ 1 4) 0.5)
+    (test-saw (/ 1 2) -1)
+    (test-saw (/ 3 4) -0.5)
+    (test-saw 1 0))
+
+  (testing "values in a period"
+    (test-saw (/ 1 8) 0.25)
+    (test-saw (/ 3 8) 0.75)
+    (test-saw (/ 5 8) -0.75)
+    (test-saw (/ 7 8) -0.25))
+
+  (testing "values out of period"
+    (testing "minus side of range"
+      (test-saw (- (/ 1 4)) -0.5)
+      (test-saw (- (/ 1 2)) -1))
+    (testing "plus side of range"
+      (test-saw (1+ (/ 1 4)) 0.5)
+      (test-saw (1+ (/ 1 2)) -1))))
