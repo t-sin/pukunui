@@ -1,4 +1,4 @@
-(defpackage #:pukunui/audio-loop
+(defpackage #:pukunui/portaudio
   (:use #:cl)
   (:export #:+frames-per-buffer+
            #:+sample-rate+
@@ -9,7 +9,7 @@
            #:make-paconf*
 
            #:start))
-(in-package #:pukunui/audio-loop)
+(in-package #:pukunui/portaudio)
 
 (defparameter +frames-per-buffer+ 1024)
 (defparameter +sample-rate+ 44100.0D0)
