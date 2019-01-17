@@ -10,6 +10,7 @@
            #:make-paconf
            #:paconf-frames-per-buffer
            #:paconf-sample-rate
+           #:make-paconf*
 
            #:start))
 (in-package #:pukunui/audio-loop)
@@ -22,6 +23,11 @@
   sample-rate)
 
 (defun start (paconf)
+(defun make-paconf* (&key (frames +frames-per-buffer+)
+                          (samples +sample-rate+))
+  (make-paconf :frames-per-buffer frames
+               :sample-rate samples))
+
   (let ((frames-per-buffer (paconf-frames-per-buffer paconf))
         (sample-rate (paconf-sample-rate paconf)))
     (with-audio
