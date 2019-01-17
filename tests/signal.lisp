@@ -172,4 +172,15 @@
       (test-pulse (1+ (/ 1 4)) 1)
       (test-pulse (1+ (/ 1 2)) -1)))
 
-  (testing "duty ratio"))
+  (testing "duty ratio"
+    (let ((duty 0.25))
+      (test-pulse 0 1 duty)
+      (test-pulse (/ 1 4) -1 duty)
+      (test-pulse (/ 2 4) -1 duty))
+    (let ((duty 0.75))
+      (test-pulse 0 1 duty)
+      (test-pulse (/ 0 4) 1 duty)
+      (test-pulse (/ 1 4) 1 duty)
+      (test-pulse (/ 2 4) 1 duty)
+      (test-pulse (/ 3 4) -1 duty)
+      (test-pulse (/ 4 4) 1 duty))))
