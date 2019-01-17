@@ -40,6 +40,6 @@
                 :for tick := 0 :then (1+ tick)
                 :do (multiple-value-bind (l r)
                         (funcall signal-fn)
-                      (setf (aref buffer (* 2 n)) l
-                            (aref buffer (1+ (* 2 n))) r)))
+                      (setf (aref buffer (* 2 n)) (coerce l 'single-float)
+                            (aref buffer (1+ (* 2 n))) (coerce r 'single-float))))
               (pa:write-stream stream buffer)))))))
