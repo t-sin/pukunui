@@ -7,7 +7,8 @@
            #:3PI/2
 
            #:tri
-           #:saw))
+           #:saw
+           #:pulse))
 (in-package #:pukunui/signal)
 
 (defun pan (l r pan)
@@ -32,3 +33,8 @@
          (y (* x 2)))
     (cond ((>= x (/ 1 2)) (- y 2))
           (t y))))
+
+(defun pulse (x &optional (duty (/ 1 2)))
+  (let* ((x (mod x 1)))
+    (cond ((< x duty) 1)
+          (t -1))))

@@ -9,7 +9,8 @@
                 #:3PI/2
 
                 #:tri
-                #:saw))
+                #:saw
+                #:pulse))
 (in-package #:pukunui-test/tests/signal)
 
 ;;;;
@@ -145,3 +146,30 @@
     (testing "plus side of range"
       (test-saw (1+ (/ 1 4)) 0.5)
       (test-saw (1+ (/ 1 2)) -1))))
+
+(defun test-pulse (x expected &optional (duty 0.5))
+  (ok (= (pulse x duty) expected)))
+
+(deftest pulse-function
+  (testing "values in period (duty: 0.5)"
+    (test-pulse 0 1)
+    (test-pulse (/ 1 4) 1)
+    (test-pulse (/ 1 2) -1)
+    (test-pulse (/ 3 4) -1)
+    (test-pulse 1 1))
+
+  (testing "values in period (duty: 0.5)"
+    (test-pulse (/ 1 8) 1)
+    (test-pulse (/ 3 8) 1)
+    (test-pulse (/ 5 8) -1)
+    (test-pulse (/ 7 8) -1))
+
+  (testing "values out of period"
+    (testing "minus side of range"
+      (test-pulse (- (/ 1 4)) -1)
+      (test-pulse (- (/ 1 2)) -1))
+    (testing "plus side of range"
+      (test-pulse (1+ (/ 1 4)) 1)
+      (test-pulse (1+ (/ 1 2)) -1)))
+
+  (testing "duty ratio"))
