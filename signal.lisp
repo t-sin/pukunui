@@ -1,6 +1,10 @@
 (defpackage #:pukunui/signal
   (:use #:cl)
-  (:export #:pan
+  (:export #:gain
+           #:gain-2
+           #:mix
+           #:mix-2
+           #:pan
 
            #:2PI
            #:PI/2
