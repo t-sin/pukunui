@@ -2,6 +2,10 @@
   (:use #:cl
         #:rove)
   (:import-from #:pukunui/signal
+                #:gain
+                #:gain-2
+                #:mix
+                #:mix-2
                 #:pan
 
                 #:2PI
@@ -15,6 +19,56 @@
 
 ;;;;
 ;; panning
+
+(defun test-gain (s g expected)
+  (ok (= (gain s g) expected)))
+
+(deftest calculate-gain
+  (testing "value 1"
+    (test-gain 1 1 1)
+    (test-gain 1 0.5 0.5)
+    (test-gain 1 0 0))
+  (testing "value 0"
+    (test-gain 0 1 0)
+    (test-gain 0 0.5 0)
+    (test-gain 0 0 0))
+  (testing "value 0.5"
+    (test-gain 0.5 1 0.5)
+    (test-gain 0.5 0.5 0.25)
+    (test-gain 0.5 0 0)))
+
+(defun test-gain-2 (l r g el er)
+  (multiple-value-bind (l r)
+      (gain-2 l r g)
+    (ok (= l el))
+    (ok (= r er))))
+
+(deftest calculate-stereo-gain
+  (testing "max/min"
+    (test-gain-2 1 1 1 1 1)
+    (test-gain-2 1 1 0 0 0))
+  (testing "left/right"
+    (test-gain-2 1 0 0.5 0.5 0)
+    (test-gain-2 0 1 0.5 0 0.5)))
+
+(defun test-mix (s1 s2 expected)
+  (ok (= (mix s1 s2) expected)))
+
+(deftest mixing
+  (test-mix 1 1 2)
+  (test-mix 0 1 1)
+  (test-mix 1 0 1)
+  (test-mix 0 0 0))
+
+(defun test-mix-2 (l1 r1 l2 r2  el er)
+  (multiple-value-bind (l r)
+      (mix-2 l1 r1 l2 r2)
+    (ok (= l el))
+    (ok (= r er))))
+
+(deftest stereo-mixing
+  (test-mix-2 0 1 1 0 1 1)
+  (test-mix-2 1 0 0 1 1 1))
 
 (defun test-pan (l r p el er)
   (multiple-value-bind (al ar)
