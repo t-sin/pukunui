@@ -11,18 +11,22 @@
            #:pulse))
 (in-package #:pukunui/signal)
 
+(defun gain (s g)
+  (* s g))
+(defun gain-2 (l r g)
+  (values (gain l g) (gain r g)))
+
+(defun mix (s1 s2)
+  (+ s1 s2))
+(defun mix-2 (l1 r1 l2 r2)
+  (values (mix l1 l2)
+          (mix r1 r2)))
+
 (defun pan (l r pan)
   (assert (and (<= -1 pan) (<= pan 1)))
   (cond ((zerop pan) (values l r))
         ((plusp pan) (values (* (- 1 pan) l) r))
         ((minusp pan) (values l (* (+ 1 pan) r)))))
-
-(defun mix (s1 g1 s2 g2)
-  (+ (* s1 g1) (* s2 g2)))
-
-(defun mix-2 (l1 r1 g1 l2 r2 g2)
-  (values (mix l1 l2 g1 g2)
-          (mix r1 r2 g1 g2)))
 
 (defconstant 2PI (* 2 PI))
 (defconstant PI/2 (/ PI 2))
