@@ -40,3 +40,10 @@
 
 (defmethod print-object ((osc osc) stream)
   (format stream "(:osc ~a)" (osc-init-phase osc)))
+
+;;;;
+;; unit graph
+
+(defun unit-add (u g))
+(defun unit-del (u g))
+(defun unit-ins (u g pos))
