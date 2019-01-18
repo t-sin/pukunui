@@ -3,6 +3,7 @@
   (:export #:unit
            #:make-unit
            #:unit-p
+           #:unit-id
            #:unit-gain
 
            #:stereo
@@ -20,7 +21,7 @@
 ;; signal generator unit
 
 (defstruct unit
-  gain)
+  id gain)
 
 (defmethod print-object ((unit unit) stream)
   (format stream "(:unit ~a)" (unit-gain unit)))
