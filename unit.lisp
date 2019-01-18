@@ -11,10 +11,11 @@
            #:stereo-p
            #:stereo-pan
 
-           #:osc
-           #:make-osc
-           #:osc-p
-           #:osc-theta))
+           #:gen
+           #:make-gen
+           #:gen-p
+           #:gen-ph
+           #:gen-init-phase))
 (in-package #:pukunui/unit)
 
 ;;;;
@@ -35,11 +36,11 @@
 ;;;;
 ;; absctract oscillator
 
-(defstruct osc
+(defstruct gen
   init-phase ph)
 
-(defmethod print-object ((osc osc) stream)
-  (format stream "(:osc ~a)" (osc-init-phase osc)))
+(defmethod print-object ((gen gen) stream)
+  (format stream "(:gen ~a)" (gen-init-phase gen)))
 
 ;;;;
 ;; unit graph
