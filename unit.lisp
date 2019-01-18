@@ -1,5 +1,5 @@
 (defpackage #:pukunui/unit
-  (:cl #:cl)
+  (:use #:cl)
   (:export #:unit
            #:make-unit
            #:unit-p
