@@ -11,15 +11,20 @@
            #:stereo-p
            #:stereo-pan
 
-           #:gen
-           #:make-gen
-           #:gen-p
-           #:gen-ph
-           #:gen-init-phase))
+           #:gen-2
+           #:make-gen-2
+           #:gen-2-p
+           #:gen-2-ph
+           #:gen-2-init-phase
+
+           #:simple-osc
+           #:make-simple-osc
+           #:simple-osc-p
+           #:simple-osc-freq))
 (in-package #:pukunui/unit)
 
 ;;;;
-;; signal generator unit
+;; signal unit
 
 (defstruct unit
   id gain)
@@ -33,14 +38,17 @@
 (defmethod print-object ((stereo stereo) stream)
   (format stream "(:stereo ~a)" (stereo-pan stereo)))
 
-;;;;
-;; absctract oscillator
-
-(defstruct gen
+(defstruct (gen (:include unit))
   init-phase ph)
 
-(defmethod print-object ((gen gen) stream)
-  (format stream "(:gen ~a)" (gen-init-phase gen)))
+(defstruct (gen-2 (:include stereo))
+  init-phase ph)
+
+(defmethod print-object ((gen-2 gen-2) stream)
+  (format stream "(:gen-2 ~a)" (gen-2-init-phase gen-2)))
+
+(defstruct (simple-osc (:include gen-2))
+  freq)
 
 ;;;;
 ;; unit graph
