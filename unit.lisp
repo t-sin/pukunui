@@ -1,46 +1,26 @@
 (defpackage #:pukunui/unit
-  (:use #:cl)
-  (:export #:unit
-           #:make-unit
-           #:unit-p
-           #:unit-id
-           #:unit-gain
+  (:use #:cl #:pukunui/signal)
+  (:export #:slot
+           #:make-slot
+           #:slot-p
+           #:slot-val
+           #:slot-default
+           #:slot-max
+           #:slot-min
+           #:slot-step
 
-           #:stereo
-           #:make-stereo
-           #:stereo-p
-           #:stereo-pan
+           #:base-unit
+           #:make-base-unit
+           #:base-unit-p
+           #:base-unit-id
 
-           #:gen
-           #:make-gen
-           #:gen-p
-           #:gen-ph
-           #:gen-init-phase
-           #:gen-2
-           #:make-gen-2
-           #:gen-2-p
-           #:gen-2-ph
-           #:gen-2-init-phase
-
-           #:osc
-           #:make-osc
-           #:osc-p
-           #:osc-freq
-           #:osc-2
-           #:make-osc-2
-           #:osc-2-p
-           #:osc-2-freq))
+           #:calc-unit
+           #:defunit))
 (in-package #:pukunui/unit)
 
 (defparameter *unit-id* 0)
 (defparameter *unit-proc-map* (make-hash-table :test 'eq))
 (defparameter *unit-map* (make-hash-table))
-
-(defun proc-unit (u)
-  (let ((proc (gethash (intern (symbol-name (type-of u)) :keyword) *unit-proc-map*)))
-    (if (null proc)
-        (error (format nil "proc for ~s is not defined." u))
-        (funcall proc u))))
 
 (defstruct slot
   val default max min step)
@@ -48,58 +28,86 @@
 (defstruct base-unit
   id)
 
-(defun calculate-slot (s)
-  (if (slot-p s)
-      (slot-val s)
-      (proc-unit s)))
+(defun calc-unit (u)
+  (let ((proc (gethash (intern (symbol-name (type-of u)) :keyword) *unit-proc-map*)))
+    (if (null proc)
+        (error (format nil "proc for ~s is not defined." u))
+        (funcall proc u))))
 
-(defun collect-slotdefs (defs)
-  (let ((slot-names nil)
-        (def-names nil)
-        (slot-specs nil))
-    (dolist (def defs)
-      (if (symbol-p def)
-          :default-slot-spec
-          :specified-slot-spec))))
+(defun calc-slot (s)
+  (typecase s
+    (slot (slot-val s))
+    (base-unit (calc-unit s))
+    (t s)))
 
-(defmacro defunit (name slots &body body)
-  (let ((proc (gensym))
-        (constructor (intern (format nil "create-~a" (symbol-name name))))
-        (unit-p (intern (format nil "~a-P" (symbol-name name)))))
-    (multiple-value-bind (names slotnames slotspecs)
-        (collect-slotdefs slots)
-      `(progn
-         (defstruct (,name (:include base-unit)) ,@slots)
-         (defun ,constructor ())
-         (setf (gethash ,(intern (symbol-name name) :keyword)
-                        pukunui/unit::*unit-proc-map*)
-               (lambda (,(intern "U"))
-                 (declare (ignorable ,(intern "U")))
-                 ,@body))
-         (export ',constructor)
-         (export ',unit-p)))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun make-slotspec (spec)
+    (let ((new-spec '(:val 0 :default 0 :max 1 :min 0 :step 0.01)))
+      (loop
+        :for (k v) :on spec :by #'cddr
+        :do (setf (getf new-spec k) v))
+      new-spec))
 
-(defstruct (unit (:include base-unit))
-  gain)
+  (defun collect-slotdefs (defs)
+    (let ((slot-names nil)
+          (exported-names nil)
+          (slot-specs nil))
+      (dolist (def defs)
+        (destructuring-bind (name . spec)
+            def
+          (if (listp name)
+              (progn
+                (push (first name) slot-names)
+                (when (eq (second name) :export)
+                  (push (first name) exported-names))
+                (setf (getf slot-specs (first name)) (make-slotspec spec)))
+              (progn
+                (push name slot-names)
+                (setf (getf slot-specs name) (make-slotspec spec))))))
+      (values (nreverse slot-names)
+              (nreverse exported-names)
+              slot-specs)))
 
-(defstruct (stereo (:include unit))
-  pan)
+  (defmacro defunit (name slots &body body)
+    (let (($constructor (intern (format nil "CREATE-~a" (symbol-name name))))
+          ($unit-p (intern (format nil "~a-P" (symbol-name name))))
+          ($u (gensym "defunit/u")))
+      (multiple-value-bind (slot-names export-slots slot-specs)
+          (collect-slotdefs slots)
+        `(progn
+           (defstruct (,name (:include base-unit))
+             ,@(mapcar (lambda (n)
+                         `(,n ,(getf (getf slot-specs n) :default)))
+                       slot-names))
+           (defun ,$constructor (,@export-slots)
+             (let ((,$u (,(intern (format nil "MAKE-~a" name))
+                         :id (prog1
+                                 pukunui/unit::*unit-id*
+                               (incf pukunui/unit::*unit-id*)))))
+               ,@(mapcar (lambda (n)
+                           `(setf (,(intern (format nil "~a-~a" name n)) ,$u) ,n))
+                         export-slots)
+               ,$u))
+           (setf (gethash ,(intern (symbol-name name) :keyword)
+                          pukunui/unit::*unit-proc-map*)
+                 (lambda (,(intern "U"))
+                   (declare (ignorable ,(intern "U")))
+                   ,@body))
+           (export '(,$constructor ,$unit-p))
+           (export ',(mapcar (lambda (n)
+                               (intern (format nil "~a-~a" name (symbol-name n))))
+                             export-slots)))))))
 
-(defstruct (gen (:include unit))
-  init-phase ph)
+(defunit unit
+    (((v :export) :default 0 :max 1 :min -1)
+     ((gain :export) :default 1 :max 1 :min 0))
+  (let ((v (gain (calc-slot (unit-v u))
+                 (calc-slot (unit-gain u)))))
+    (values v v)))
 
-(defstruct (gen-2 (:include stereo))
-  init-phase ph)
-
-(defstruct (osc (:include gen))
-  freq)
-
-(defstruct (osc-2 (:include gen-2))
-  freq)
-
-;;;;
-;; unit graph
-
-(defun unit-add (u g))
-(defun unit-del (u g))
-(defun unit-ins (u g pos))
+(defunit sin
+    ((ph :val 0)
+     ((init-ph :export) :val 0))
+  (let ((v (sin (+ (sin-init-ph u) (sin-ph u)))))
+    (incf (sin-ph u) 0.01)
+    v))
