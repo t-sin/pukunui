@@ -69,14 +69,16 @@
               (nreverse exported-names)
               slot-specs)))
 
-  (defmacro defunit (name slots &body body)
+  (defmacro defunit (name (&optional parent) slots &body body)
     (let (($constructor (intern (format nil "CREATE-~a" (symbol-name name))))
           ($unit-p (intern (format nil "~a-P" (symbol-name name))))
           ($u (gensym "defunit/u")))
       (multiple-value-bind (slot-names export-slots slot-specs)
           (collect-slotdefs slots)
         `(progn
-           (defstruct (,name (:include base-unit))
+           (defstruct (,name (:include ,(if (null parent)
+                                            'base-unit
+                                            parent)))
              ,@(mapcar (lambda (n)
                          `(,n ,(getf (getf slot-specs n) :default)))
                        slot-names))
