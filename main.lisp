@@ -2,8 +2,9 @@
   (:use #:cl
         #:pukunui/portaudio
         #:pukunui/signal
-        #:pukunui/unit)
-  (:export #:generate-toplevel))
+        #:pukunui/unit
+        #:pukunui/units/core)
+  (:export #:start*))
 (in-package #:pukunui)
 
 (defparameter *unit-graph* nil)
@@ -12,5 +13,5 @@
   (calc-unit *unit-graph*))
 
 (defun start* ()
-  (setf *unit-graph* (create-unit (create-sin 0) 1))
+  (setf *unit-graph* (create-unit (create-osc 0) 1))
   (start (make-paconf*) #'calc-toplevel))

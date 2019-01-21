@@ -1,5 +1,5 @@
 (defpackage #:pukunui/unit
-  (:use #:cl #:pukunui/signal)
+  (:use #:cl)
   (:export #:slot
            #:make-slot
            #:slot-p
@@ -15,6 +15,7 @@
            #:base-unit-id
 
            #:calc-unit
+           #:calc-slot
            #:defunit))
 (in-package #:pukunui/unit)
 
@@ -97,17 +98,3 @@
            (export ',(mapcar (lambda (n)
                                (intern (format nil "~a-~a" name (symbol-name n))))
                              export-slots)))))))
-
-(defunit unit
-    (((v :export) :default 0 :max 1 :min -1)
-     ((gain :export) :default 1 :max 1 :min 0))
-  (let ((v (gain (calc-slot (unit-v u))
-                 (calc-slot (unit-gain u)))))
-    (values v v)))
-
-(defunit sin
-    ((ph :val 0)
-     ((init-ph :export) :val 0))
-  (let ((v (sin (+ (sin-init-ph u) (sin-ph u)))))
-    (incf (sin-ph u) 0.01)
-    v))
