@@ -13,5 +13,5 @@
   (calc-unit *unit-graph*))
 
 (defun start* ()
-  (setf *unit-graph* (create-unit (create-osc 0) 1))
+  (setf *unit-graph* (create-unit (create-sine 880) 1))
   (start (make-paconf*) #'calc-toplevel))

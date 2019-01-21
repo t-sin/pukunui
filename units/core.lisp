@@ -1,7 +1,9 @@
 (defpackage #:pukunui/units/core
   (:use #:cl
         #:pukunui/unit
-        #:pukunui/signal))
+        #:pukunui/signal)
+  (:import-from #:pukunui/portaudio
+                #:+sample-rate+))
 (in-package #:pukunui/units/core)
 
 (defunit unit ()
@@ -13,4 +15,10 @@
 
 (defunit osc (unit)
     ((ph :val 0)
-     ((init-ph :export) :val 0)))
+     ((init-ph :export) :val 0 :default 0)))
+
+(defunit sine (osc)
+    (((freq :export) :default 0.05 :max 20000 :min 0.05 :step 0.01))
+  (let ((v (sin (+ (osc-ph u) (osc-init-ph u)))))
+    (incf (osc-ph u) (* (/ (sine-freq u) +sample-rate+) PI))
+    v))
