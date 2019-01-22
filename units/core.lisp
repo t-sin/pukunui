@@ -34,3 +34,11 @@
   (let ((v (saw (+ (osc-ph u) (calc-slot (osc-init-ph u))))))
     (incf (osc-ph u) (/ (calc-slot (saw-freq u)) +sample-rate+ 2))
     v))
+
+(defunit pulse (osc)
+    (((freq :export) :defaut 440 :max 20000 :min 0.05 :step 0.01)
+     ((duty :export) :default 0.5 :max 1 :min 0 :step 0.01))
+  (let ((v (pulse (+ (osc-ph u) (calc-slot (osc-init-ph u)))
+                  (calc-slot (pulse-duty u)))))
+    (incf (osc-ph u) (/ (calc-slot (pulse-freq u)) +sample-rate+ 2))
+    v))
