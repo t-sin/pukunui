@@ -18,7 +18,7 @@
      ((init-ph :export) :val 0 :default 0)))
 
 (defunit sine (osc)
-    (((freq :export) :default 0.05 :max 20000 :min 0.05 :step 0.01))
+    (((freq :export) :default 440 :max 20000 :min 0.05 :step 0.01))
   (let ((v (sin (+ (osc-ph u) (calc-slot (osc-init-ph u))))))
     (incf (osc-ph u) (* (/ (calc-slot (sine-freq u)) +sample-rate+) PI))
     v))
