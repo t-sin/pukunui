@@ -90,6 +90,7 @@
                ,@(mapcar (lambda (n)
                            `(setf (,(intern (format nil "~a-~a" name n)) ,$u) ,n))
                          export-slots)
+               (setf (gethash (base-unit-id ,$u) pukunui/unit::*unit-map*) ,$u)
                ,$u))
            (setf (gethash ,(intern (symbol-name name) :keyword)
                           pukunui/unit::*unit-proc-map*)
