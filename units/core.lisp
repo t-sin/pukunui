@@ -22,3 +22,15 @@
   (let ((v (sin (+ (osc-ph u) (calc-slot (osc-init-ph u))))))
     (incf (osc-ph u) (* (/ (calc-slot (sine-freq u)) +sample-rate+) PI))
     v))
+
+(defunit tri (osc)
+    (((freq :export) :defaut 440 :max 20000 :min 0.05 :step 0.01))
+  (let ((v (tri (+ (osc-ph u) (calc-slot (osc-init-ph u))))))
+    (incf (osc-ph u) (/ (calc-slot (tri-freq u)) +sample-rate+ 2))
+    v))
+
+(defunit saw (osc)
+    (((freq :export) :defaut 440 :max 20000 :min 0.05 :step 0.01))
+  (let ((v (saw (+ (osc-ph u) (calc-slot (osc-init-ph u))))))
+    (incf (osc-ph u) (/ (calc-slot (saw-freq u)) +sample-rate+ 2))
+    v))
