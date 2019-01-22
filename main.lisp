@@ -3,7 +3,9 @@
         #:pukunui/portaudio
         #:pukunui/signal
         #:pukunui/unit
-        #:pukunui/units/core)
+
+        #:pukunui/units/core
+        #:pukunui/units/oscillator)
   (:export #:start*))
 (in-package #:pukunui)
 
