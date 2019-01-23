@@ -5,7 +5,7 @@
         #:pukunui/units/core)
   (:import-from #:pukunui/portaudio
                 #:+sample-rate+))
-(defpackage #:pukunui/units/oscillator)
+(in-package #:pukunui/units/oscillator)
 
 (defunit sine (osc)
     (((freq :export) :default 440 :max 20000 :min 0.05 :step 0.01))
