@@ -15,5 +15,9 @@
   (calc-unit *unit-graph*))
 
 (defun start* ()
-  (setf *unit-graph* (create-unit (create-sine 880) (create-sine 10)))
+  (let* ((freq-mod (create-offset 880))
+         (amp-mod (create-amp 20)))
+    (setf (unit-src amp-mod) (create-sine 7))
+    (setf (unit-src freq-mod) amp-mod)
+    (setf *unit-graph* (create-unit (create-sine freq-mod) 0.8)))
   (start (make-paconf*) #'calc-toplevel))
