@@ -12,7 +12,3 @@
   (let ((v (gain (calc-slot (unit-out u))
                  (calc-slot (unit-gain u)))))
     (values v v)))
-
-(defunit osc (unit)
-    ((ph :val 0)
-     ((init-ph :export) :val 0 :default 0)))
