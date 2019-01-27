@@ -5,6 +5,7 @@
         #:pukunui/unit
 
         #:pukunui/units/core
+        #:pukunui/units/clip
         #:pukunui/units/oscillator)
   (:export #:start*))
 (in-package #:pukunui)
@@ -15,9 +16,8 @@
   (calc-unit *unit-graph*))
 
 (defun start* ()
-  (let* ((freq-mod (create-offset 880))
-         (amp-mod (create-amp 20)))
-    (setf (unit-src amp-mod) (create-sine 7))
-    (setf (unit-src freq-mod) amp-mod)
-    (setf *unit-graph* (create-unit (create-sine freq-mod) 0.8)))
+  (let ((clip (read-wav "~/test.wav")))
+    (setf (clip-playing-p clip) t)
+    (setf (clip-loop-p clip) t)
+    (setf *unit-graph* (create-unit clip 0.8)))
   (start (make-paconf*) #'calc-toplevel))

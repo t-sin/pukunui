@@ -3,5 +3,6 @@
   :description "synth?"
   :author "TANAKA Shinichi"
   :depends-on ("cl-portaudio"
+               "cl-wav"
                "pukunui/main")
   :in-order-to ((test-op (test-op "pukunui-test"))))
