@@ -1,10 +1,22 @@
 # Pukunui
 
-Sound Experiments Pukunui.
+Sound experiments Pukunui.
+
+## Installation
+
+*Pukunui* requires the libraries below:
+
+- PortAudio
+
+## Usage
+
+Place *Pukunui* to the path of ASDF, and load it.
+
+Then type `(pukunui:start*)` start playing some noise.
 
 ## Author
 
- - TANAKA Shinichi (shinichi.tanaka45@gmail.com)
+- TANAKA Shinichi (shinichi.tanaka45@gmail.com)
 
 ## License
 
