@@ -2,6 +2,15 @@
 
 Sound experiments Pukunui.
 
+## TODOs
+
+- [x] primitive tested signal functions
+- [x] primitive wave generation
+- [x] insert modulator as a unit slot value
+- [x] WAV file playback
+- [ ] timeline information (like 'bar')
+- [ ] sequencers
+
 ## Installation
 
 *Pukunui* requires the libraries below:
@@ -13,6 +22,8 @@ Sound experiments Pukunui.
 Place *Pukunui* to the path of ASDF, and load it.
 
 Then type `(pukunui:start*)` start playing some noise.
+
+
 
 ## Author
 
