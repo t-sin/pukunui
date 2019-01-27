@@ -16,7 +16,7 @@
   (calc-unit *unit-graph*))
 
 (defun start* ()
-  (let ((clip (read-wav "~/test.wav")))
+  (let ((clip (read-wav (asdf:system-relative-pathname :pukunui "ev.wav"))))
     (setf (clip-playing-p clip) t)
     (setf (clip-loop-p clip) t)
     (setf *unit-graph* (create-unit clip 0.8)))
