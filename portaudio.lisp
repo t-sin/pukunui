@@ -24,9 +24,10 @@
                :sample-rate samples))
 
 (defun start (paconf signal-fn)
-  (let ((frames-per-buffer (paconf-frames-per-buffer paconf))
-        (sample-rate (paconf-sample-rate paconf)))
-    (pa:with-audio
+  (lambda ()
+    (let ((frames-per-buffer (paconf-frames-per-buffer paconf))
+          (sample-rate (paconf-sample-rate paconf)))
+      (pa:with-audio
         (pa:with-default-audio-stream (stream 0 2
                                               :frames-per-buffer frames-per-buffer
                                               :sample-format :float
@@ -42,4 +43,4 @@
                         (funcall signal-fn)
                       (setf (aref buffer (* 2 n)) (coerce l 'single-float)
                             (aref buffer (1+ (* 2 n))) (coerce r 'single-float))))
-              (pa:write-stream stream buffer)))))))
+              (pa:write-stream stream buffer))))))))
