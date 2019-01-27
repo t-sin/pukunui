@@ -8,5 +8,7 @@
                "cl-portaudio"
                "cl-wav"
 
+               "bordeaux-threads"
+
                "pukunui/main")
   :in-order-to ((test-op (test-op "pukunui-test"))))

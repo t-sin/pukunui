@@ -9,7 +9,8 @@
         #:pukunui/units/oscillator
 
         #:pukunui/pcm)
-  (:export #:start*))
+  (:export #:start
+           #:stop))
 (in-package #:pukunui)
 
 (defparameter *unit-graph* nil)
@@ -17,11 +18,19 @@
 (defun calc-toplevel ()
   (calc-unit *unit-graph*))
 
-(defun start* ()
-  (let ((clip (read-wav (asdf:system-relative-pathname :pukunui "ev.wav")))
-        (gain-mod (create-offset 0.7)))
-    (setf (unit-src gain-mod) (create-sine 39))
-    (setf (clip-playing-p clip) t)
-    (setf (clip-loop-p clip) t)
-    (setf *unit-graph* (create-unit clip gain-mod)))
-  (start (make-paconf*) #'calc-toplevel))
+(defparameter *sound-thread* nil)
+
+(let ((clip (read-wav (asdf:system-relative-pathname :pukunui "ev.wav")))
+      (gain-mod (create-offset 0.7)))
+  (setf (unit-src gain-mod) (create-sine 39))
+  (setf (clip-playing-p clip) t)
+  (setf (clip-loop-p clip) t)
+  (setf *unit-graph* (create-unit clip gain-mod)))
+
+(defun start ()
+  (let ((th (bt:make-thread (pastart (make-paconf*) #'calc-toplevel)
+                            :name "pukunui-sound-thread")))
+    (setf *sound-thread* th)))
+
+(defun stop ()
+  (bt:destroy-thread *sound-thread*))

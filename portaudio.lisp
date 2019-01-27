@@ -8,7 +8,7 @@
            #:paconf-sample-rate
            #:make-paconf*
 
-           #:start))
+           #:pastart))
 (in-package #:pukunui/portaudio)
 
 (defparameter +frames-per-buffer+ 1024)
@@ -23,7 +23,7 @@
   (make-paconf :frames-per-buffer frames
                :sample-rate samples))
 
-(defun start (paconf signal-fn)
+(defun pastart (paconf signal-fn)
   (lambda ()
     (let ((frames-per-buffer (paconf-frames-per-buffer paconf))
           (sample-rate (paconf-sample-rate paconf)))
