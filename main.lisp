@@ -6,7 +6,9 @@
 
         #:pukunui/units/core
         #:pukunui/units/clip
-        #:pukunui/units/oscillator)
+        #:pukunui/units/oscillator
+
+        #:pukunui/pcm)
   (:export #:start*))
 (in-package #:pukunui)
 
