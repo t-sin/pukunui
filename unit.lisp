@@ -73,6 +73,12 @@
               (nreverse exported-names)
               slot-specs)))
 
+  (defun make-defstruct (name parent slot-names slot-specs)
+    `(defstruct (,name (:include ,(if (null parent) 'base-unit parent)))
+       ,@(mapcar (lambda (slot-name)
+                   `(,slot-name ,(getf (getf slot-specs slot-name) :default)))
+                 slot-names)))
+
   (defmacro defunit (name (&optional parent) slots &body body)
     (let (($constructor (intern (format nil "CREATE-~a" (symbol-name name))))
           ($unit-p (intern (format nil "~a-P" (symbol-name name))))
@@ -80,12 +86,7 @@
       (multiple-value-bind (slot-names export-slots slot-specs)
           (collect-slotdefs slots)
         `(progn
-           (defstruct (,name (:include ,(if (null parent)
-                                            'base-unit
-                                            parent)))
-             ,@(mapcar (lambda (n)
-                         `(,n ,(getf (getf slot-specs n) :default)))
-                       slot-names))
+           ,(make-defstruct name parent slot-names slot-specs)
            (defun ,$constructor (,@export-slots)
              (let ((,$u (,(intern (format nil "MAKE-~a" name))
                          :id (prog1
