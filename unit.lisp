@@ -36,9 +36,10 @@
         (funcall proc u))))
 
 (defun calc-slot (s)
-  (etypecase s
+  (typecase s
     (slot (slot-val s))
-    (base-unit (calc-unit s))))
+    (base-unit (calc-unit s))
+    (t s)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun make-slotspec (spec)
@@ -51,42 +52,35 @@
   (defun collect-slotdefs (defs)
     (let ((slot-names nil)
           (exported-names nil)
-          (mod-names nil)
           (slot-specs nil))
       (dolist (def defs)
         (destructuring-bind (name . spec)
             def
           (if (listp name)
               (progn
-                (push (car name) slot-names)
-                (when (member :export (cdr name))
+                (push (first name) slot-names)
+                (when (eq (second name) :export)
                   (push (first name) exported-names))
-                (when (member :mod (cdr name))
-                  (push (first name) mod-names))
                 (setf (getf slot-specs (first name)) (make-slotspec spec)))
               (progn
                 (push name slot-names)
                 (setf (getf slot-specs name) (make-slotspec spec))))))
       (values (nreverse slot-names)
               (nreverse exported-names)
-              (nreverse mod-names)
               slot-specs)))
 
   (defmacro defunit (name (&optional parent) slots &body body)
     (let (($constructor (intern (format nil "CREATE-~a" (symbol-name name))))
           ($unit-p (intern (format nil "~a-P" (symbol-name name))))
           ($u (gensym "defunit/u")))
-      (multiple-value-bind (slot-names export-slots mod-slots slot-specs)
+      (multiple-value-bind (slot-names export-slots slot-specs)
           (collect-slotdefs slots)
         `(progn
            (defstruct (,name (:include ,(if (null parent)
                                             'base-unit
                                             parent)))
              ,@(mapcar (lambda (n)
-                         `(,n ,(let ((spec (getf slot-specs n)))
-                                  (if (member n mod-slots)
-                                      `(make-slot ,@spec)
-                                      (getf spec :default)))))
+                         `(,n ,(getf (getf slot-specs n) :default)))
                        slot-names))
            (defun ,$constructor (,@export-slots)
              (let ((,$u (,(intern (format nil "MAKE-~a" name))
@@ -94,9 +88,7 @@
                                  pukunui/unit::*unit-id*
                                (incf pukunui/unit::*unit-id*)))))
                ,@(mapcar (lambda (n)
-                           (if (member n mod-slots)
-                               `(setf (slot-val (,(intern (format nil "~a-~a" name n)) ,$u)) ,n)
-                               `(setf (,(intern (format nil "~a-~a" name n)) ,$u) ,n)))
+                           `(setf (,(intern (format nil "~a-~a" name n)) ,$u) ,n))
                          export-slots)
                (setf (gethash (base-unit-id ,$u) pukunui/unit::*unit-map*) ,$u)
                ,$u))

@@ -11,7 +11,7 @@
 (defunit clip (unit)
   (((lbuf :export))
    ((rbuf :export))
-   ((loop-p :export :mod) :default nil)
+   ((loop-p :export) :default nil)
    (playing-p :default t)
    (idx :default 0))
   (cond ((null (clip-playing-p u))
