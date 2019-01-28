@@ -25,7 +25,7 @@
   (setf (unit-src gain-mod) (create-sine 39))
   (setf (clip-playing-p clip) t)
   (setf (clip-loop-p clip) t)
-  (setf *unit-graph* (create-unit clip gain-mod)))
+  (setf *unit-graph* (create-unit clip 0.8)))
 
 (defun start ()
   (let ((th (bt:make-thread (pastart (make-paconf*) #'calc-toplevel)
