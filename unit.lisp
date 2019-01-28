@@ -110,8 +110,7 @@
 
   (defmacro defunit (name (&optional parent) slots &body body)
     (let ((constructor (intern (format nil "CREATE-~a" (symbol-name name))))
-          (unit-p (intern (format nil "~a-P" (symbol-name name))))
-          ($u (gensym "defunit/u")))
+          (unit-p (intern (format nil "~a-P" (symbol-name name)))))
       (multiple-value-bind (slot-names export-slots slot-specs)
           (collect-slotdefs slots)
         `(progn
