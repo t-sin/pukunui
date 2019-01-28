@@ -8,6 +8,7 @@ Sound experiments Pukunui.
 - [x] primitive wave generation
 - [x] insert modulator as a unit slot value
 - [x] WAV file playback
+- [x] audio playback thread
 - [ ] timeline information (like 'bar')
 - [ ] sequencers
 
@@ -21,7 +22,7 @@ Sound experiments Pukunui.
 
 Place *Pukunui* to the path of ASDF, and load it.
 
-Then type `(pukunui:start*)` start playing some noise.
+Then type `(pukunui:start)` start playing some noise. If you want to stop the noise, type `(pukunui:stop)`.
 
 
 
