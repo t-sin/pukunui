@@ -26,6 +26,10 @@
 (defstruct slot
   val default max min step)
 
+(defmethod print-object ((s slot) stream)
+  (format stream "#(:V ~s :DEF ~s :MAX ~s :MIN ~s :BY ~s)"
+          (slot-val s) (slot-default s) (slot-max s) (slot-min s) (slot-step s)))
+
 (defstruct base-unit
   id)
 

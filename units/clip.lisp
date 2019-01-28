@@ -31,5 +31,5 @@
              (values l r)))))
 
 (defmethod print-object ((o clip) stream)
-  (format stream "#<CLIP :LBUF ~a :RBUF ~a :LOOP-P ~a :PLAYING-P ~a>"
+  (format stream "#(CLIP :LBUF ~a :RBUF ~a :LOOP-P ~a :PLAYING-P ~a)"
           (length (clip-lbuf o)) (length (clip-rbuf o)) (clip-loop-p o) (clip-playing-p o)))
