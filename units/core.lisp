@@ -8,13 +8,14 @@
 
 (defunit unit ()
   (((src :export) :default 0 :max 1 :min -1)
-   ((gain :export) :default 1 :max 1 :min 0))
+   ((gain :export) :default 1 :max 1 :min 0)
+   ((pan :export) :default 0 :max 1 :min -1))
   (multiple-value-bind (l r)
       #@unit-src
-    (let* ((g #@unit-gain)
-           (l (gain l g))
-           (r (gain r g)))
-      (values l r))))
+    (let* ((g #@unit-gain))
+      (pan (gain l g)
+           (gain r g)
+           #@unit-pan))))
 
 (defunit offset (unit)
   (((value :export) :default 0))

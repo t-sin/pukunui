@@ -23,15 +23,16 @@
            (if (clip-loop-p u)
                (progn
                  (setf (clip-idx u) 1)
-                 (values (svref lbuf 0)
-                         (svref rbuf 0)))
+                 (pan (svref lbuf 0)
+                      (svref rbuf 0)
+                      #@unit-pan))
                (progn
                  (setf (clip-playing-p u) nil)
                  (values 0 0))))
           (t (let ((l (svref lbuf idx))
                    (r (svref rbuf idx)))
                (incf (clip-idx u))
-               (values l r))))))
+               (pan l r #@unit-pan))))))
 
 (defmethod print-object ((o clip) stream)
   (format stream "#(CLIP :LBUF ~a :RBUF ~a :LOOP-P ~a :PLAYING-P ~a)"

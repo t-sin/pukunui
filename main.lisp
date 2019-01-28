@@ -23,13 +23,15 @@
 (defparameter *ev* (read-wav (asdf:system-relative-pathname :pukunui "ev.wav")))
 (defparameter *dr* (read-wav (asdf:system-relative-pathname :pukunui "dr.wav")))
 
-(let ((umix (create-umix)))
-  (setf (unit-src umix) (vector *ev* *dr*))
+(let ((umix (create-umix))
+      (sine (create-sine 880)))
+  (setf (unit-src umix) (vector *ev*))
+  (setf (unit-pan *ev*) (create-sine 1))
   (setf (clip-playing-p *ev*) t)
   (setf (clip-loop-p *ev*) t)
   (setf (clip-playing-p *dr*) t)
   (setf (clip-loop-p *dr*) t)
-  (setf *unit-graph* (create-unit umix 0.3)))
+  (setf *unit-graph* (create-unit *ev* 0.3 0)))
 
 (defun start ()
   (let ((th (bt:make-thread (pastart (make-paconf*) #'calc-toplevel)
