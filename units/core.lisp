@@ -29,3 +29,16 @@
     (multiple-value-bind (l r)
         #@unit-src
       (values (* l val) (* r val)))))
+
+(defunit umix (unit)
+  ()
+  (let ((ulis #@unit-src))
+    (loop
+      :for u :across ulis
+      :with l := 0
+      :with r := 0
+      :do (multiple-value-bind (l2 r2)
+              (calc-unit u)
+            (incf l l2)
+            (incf r r2))
+      :finally (return (values l r)))))

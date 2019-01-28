@@ -20,12 +20,16 @@
 
 (defparameter *sound-thread* nil)
 
-(let ((clip (read-wav (asdf:system-relative-pathname :pukunui "ev.wav")))
-      (gain-mod (create-offset 0.7)))
-  (setf (unit-src gain-mod) (create-sine 39))
-  (setf (clip-playing-p clip) t)
-  (setf (clip-loop-p clip) t)
-  (setf *unit-graph* (create-unit clip gain-mod)))
+(defparameter *ev* (read-wav (asdf:system-relative-pathname :pukunui "ev.wav")))
+(defparameter *dr* (read-wav (asdf:system-relative-pathname :pukunui "dr.wav")))
+
+(let ((ugroup (create-ugroup)))
+  (setf (unit-src ugroup) (vector *ev* *dr*))
+  (setf (clip-playing-p *ev*) t)
+  (setf (clip-loop-p *ev*) t)
+  (setf (clip-playing-p *dr*) t)
+  (setf (clip-loop-p *dr*) t)
+  (setf *unit-graph* (create-unit ugroup 0.3)))
 
 (defun start ()
   (let ((th (bt:make-thread (pastart (make-paconf*) #'calc-toplevel)
