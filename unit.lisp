@@ -16,7 +16,8 @@
 
            #:calc-unit
            #:calc-slot
-           #:defunit))
+           #:defunit
+           #:u))
 (in-package #:pukunui/unit)
 
 (defparameter *unit-id* 0)
@@ -94,6 +95,12 @@
                      export-slots)
            (setf (gethash (base-unit-id ,$unit) pukunui/unit::*unit-map*) ,$unit)))))
 
+  (defun make-proc (name body)
+    `(flet ((proc-fn (u) (declare (ignorable u)) ,@body))
+       (setf (gethash ,(intern (symbol-name name) :keyword)
+                      pukunui/unit::*unit-proc-map*)
+             #'proc-fn)))
+
   (defmacro defunit (name (&optional parent) slots &body body)
     (let ((constructor (intern (format nil "CREATE-~a" (symbol-name name))))
           (unit-p (intern (format nil "~a-P" (symbol-name name))))
@@ -103,11 +110,7 @@
         `(progn
            ,(make-defstruct name parent slot-names slot-specs)
            ,(make-constructor constructor name export-slots)
-           (setf (gethash ,(intern (symbol-name name) :keyword)
-                          pukunui/unit::*unit-proc-map*)
-                 (lambda (,(intern "U"))
-                   (declare (ignorable ,(intern "U")))
-                   ,@body))
+           ,(make-proc name body)
            (export '(,name ,constructor ,unit-p))
            (export ',(mapcar (lambda (n)
                                (intern (format nil "~a-~a" name (symbol-name n))))
