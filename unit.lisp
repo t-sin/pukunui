@@ -46,6 +46,13 @@
     (base-unit (calc-unit s))
     (t s)))
 
+(defun ref-reader (s c1 c2)
+  (declare (ignore c1 c2))
+  (let ((name (read s)))
+    `(calc-slot (,name u))))
+
+(set-dispatch-macro-character #\# #\@ #'ref-reader)
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun make-slotspec (spec)
     (let ((new-spec '(:val 0 :default 0 :max 1 :min 0 :step 0.01)))
