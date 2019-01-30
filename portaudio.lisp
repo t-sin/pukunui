@@ -38,7 +38,6 @@
             (loop
               (loop
                 :for n :from 0 :below frames-per-buffer
-                :for tick := 0 :then (1+ tick)
                 :do (multiple-value-bind (l r)
                         (funcall signal-fn)
                       (setf (aref buffer (* 2 n)) (coerce l 'single-float)
