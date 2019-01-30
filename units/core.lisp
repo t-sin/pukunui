@@ -12,7 +12,7 @@
    ((pan :export) :default 0 :max 1 :min -1))
   (multiple-value-bind (l r)
       #@unit-src
-    (let* ((g #@unit-gain))
+    (let ((g #@unit-gain))
       (pan (gain l g)
            (gain r g)
            #@unit-pan))))
@@ -39,7 +39,7 @@
       :with l := 0
       :with r := 0
       :do (multiple-value-bind (l2 r2)
-              (calc-unit u)
+              (calc-unit u ti)
             (incf l l2)
             (incf r r2))
       :finally (return (values l r)))))
