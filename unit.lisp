@@ -1,13 +1,12 @@
 (defpackage #:pukunui/unit
   (:use #:cl)
-  (:export #:slot
-           #:make-slot
-           #:slot-p
-           #:slot-val
-           #:slot-default
-           #:slot-max
-           #:slot-min
-           #:slot-step
+  (:export #:slot-spec
+           #:make-slot-spec
+           #:slot-spec-p
+           #:slot-spec-default
+           #:slot-spec-max
+           #:slot-spec-min
+           #:slot-spec-step
 
            #:base-unit
            #:make-base-unit
@@ -22,27 +21,30 @@
 
 (defparameter *unit-id* 0)
 (defparameter *unit-proc-map* (make-hash-table :test 'eq))
+(defparameter *unit-spec-map* (make-hash-table))
 (defparameter *unit-map* (make-hash-table))
 
-(defstruct slot
-  val default max min step)
+(defstruct slot-spec
+  default max min step)
 
-(defmethod print-object ((s slot) stream)
-  (format stream "#(:V ~s :DEF ~s :MAX ~s :MIN ~s :BY ~s)"
-          (slot-val s) (slot-default s) (slot-max s) (slot-min s) (slot-step s)))
+(defmethod print-object ((s slot-spec) stream)
+  (format stream "#(:DEF ~s :MAX ~s :MIN ~s :BY ~s)"
+          (slot-spec-default s) (slot-spec-max s) (slot-spec-min s) (slot-spec-step s)))
 
 (defstruct base-unit
   id)
 
+(defun make-key (u)
+  (intern (symbol-name (type-of u)) :keyword))
+
 (defun calc-unit (u)
-  (let ((proc (gethash (intern (symbol-name (type-of u)) :keyword) *unit-proc-map*)))
+  (let ((proc (gethash (make-key u) *unit-proc-map*)))
     (if (null proc)
         (error (format nil "proc for ~s is not defined." u))
         (funcall proc u))))
 
 (defun calc-slot (s)
   (typecase s
-    (slot (slot-val s))
     (base-unit (calc-unit s))
     (t s)))
 
@@ -55,7 +57,7 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun make-slotspec (spec)
-    (let ((new-spec '(:val 0 :default 0 :max 1 :min 0 :step 0.01)))
+    (let ((new-spec '(:default 0 :max 1 :min 0 :step 0.01)))
       (loop
         :for (k v) :on spec :by #'cddr
         :do (setf (getf new-spec k) v))
@@ -69,14 +71,16 @@
         (destructuring-bind (name . spec)
             def
           (if (listp name)
-              (progn
-                (push (first name) slot-names)
+              (let ((name* (first name)))
+                (push name* slot-names)
                 (when (eq (second name) :export)
-                  (push (first name) exported-names))
-                (setf (getf slot-specs (first name)) (make-slotspec spec)))
+                  (push name* exported-names))
+                (setf (getf slot-specs (intern (symbol-name name*) :keyword))
+                      (make-slotspec spec)))
               (progn
                 (push name slot-names)
-                (setf (getf slot-specs name) (make-slotspec spec))))))
+                (setf (getf slot-specs (intern (symbol-name name) :keyword))
+                      (make-slotspec spec))))))
       (values (nreverse slot-names)
               (nreverse exported-names)
               slot-specs)))
@@ -84,7 +88,8 @@
   (defun make-defstruct (name parent slot-names slot-specs)
     `(defstruct (,name (:include ,(if (null parent) 'base-unit parent)))
        ,@(mapcar (lambda (slot-name)
-                   `(,slot-name ,(getf (getf slot-specs slot-name) :default)))
+                   (let ((spec (getf slot-specs (intern (symbol-name slot-name) :keyword))))
+                     `(,slot-name ,(getf spec :default))))
                  slot-names)))
 
   (defun make-constructor (const-name name export-slots)
@@ -110,13 +115,20 @@
 
   (defmacro defunit (name (&optional parent) slots &body body)
     (let ((constructor (intern (format nil "CREATE-~a" (symbol-name name))))
-          (unit-p (intern (format nil "~a-P" (symbol-name name)))))
+          (unit-p (intern (format nil "~a-P" (symbol-name name))))
+          ($specs (gensym "defunit/specs")))
       (multiple-value-bind (slot-names export-slots slot-specs)
           (collect-slotdefs slots)
         `(progn
            ,(make-defstruct name parent slot-names slot-specs)
            ,(make-constructor constructor name export-slots)
            ,(make-proc name body)
+           (let (,$specs)
+             ,@(mapcar (lambda (slot-name)
+                         (let ((slot-name* (intern (symbol-name slot-name) :keyword)))
+                         `(setf (getf ,$specs ,slot-name*) (make-slot-spec ,@(getf slot-specs slot-name*)))))
+                       export-slots)
+             (setf (gethash ,(intern (symbol-name name) :keyword) pukunui/unit::*unit-spec-map*) ,$specs))
            (export '(,name ,constructor ,unit-p))
            (export ',(mapcar (lambda (n)
                                (intern (format nil "~a-~a" name (symbol-name n))))
