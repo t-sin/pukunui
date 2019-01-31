@@ -238,3 +238,6 @@
       (test-pulse (/ 2 4) 1 duty)
       (test-pulse (/ 3 4) -1 duty)
       (test-pulse (/ 4 4) 1 duty))))
+
+(deftest adsr-function
+  (testing "TBD"))

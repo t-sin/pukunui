@@ -12,7 +12,9 @@
 
            #:tri
            #:saw
-           #:pulse))
+           #:pulse
+
+           #:asdr))
 (in-package #:pukunui/signal)
 
 (defun gain (s g)
@@ -53,3 +55,14 @@
   (let* ((x (mod x 1)))
     (cond ((< x duty) 1)
           (t -1))))
+
+(defun adsr (a s d r state eplaced)
+  (cond ((and (membar state '(nil :a)) (< eplaced a))
+         (values :a (/ eplaced a)))
+        ((and (member state '(:a :d)) (< eplaced (+ a d)))
+         (values :d (- 1 (* (- 1 s) (/ (- eplaced a) d)))))
+        ((and (member state '(:d :s) (>= eplaced (+ a d))))
+         (values :s s))
+        ((and (eq state :r) (< eplaced r)) ;; TODO
+         (values :r (- s 0)))
+        (t (values nil 0))))
