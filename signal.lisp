@@ -65,5 +65,5 @@
         ((and (member state '(:d :s)) (>= eplaced (+ a d)))
          (values :s s))
         ((and (eq state :r) (< eplaced r)) ;; TODO
-         (values :r (- s 0)))
+         (values :r (- s (* eplaced (/ s r)))))
         (t (values nil 0))))
