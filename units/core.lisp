@@ -18,16 +18,16 @@
            (gain r g)
            #@unit-pan))))
 
-(defunit offset (unit)
+(defunit uoffset (unit)
   (((value :export) :default 0))
-  (let ((val #@offset-value))
+  (let ((val #@uoffset-value))
     (multiple-value-bind (l r)
         #@unit-src
     (values (+ l val) (+ r val)))))
 
-(defunit amp (unit)
+(defunit uamp (unit)
   (((value :export) :default 1))
-  (let ((val #@amp-value))
+  (let ((val #@uamp-value))
     (multiple-value-bind (l r)
         #@unit-src
       (values (* l val) (* r val)))))
