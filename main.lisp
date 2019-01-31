@@ -32,13 +32,14 @@
 
 (let ((umix (create-umix))
       (sine (create-sine 880)))
+  (setf (unit-gain sine) 0.3)
   (setf (unit-src umix) (vector *ev* *dr*))
   (setf (unit-pan umix) (create-sine 10))
   (setf (clip-playing-p *ev*) t)
   (setf (clip-loop-p *ev*) t)
   (setf (clip-playing-p *dr*) t)
   (setf (clip-loop-p *dr*) t)
-  (setf *unit-graph* (create-unit sine (create-uadsr 44100 200 200 0.5 200) 0)))
+  (setf *unit-graph* (create-unit sine (create-uadsr 44100 1 4000 0.2 4000) 0)))
 
 (defun init ()
   (setf *paconf* (make-paconf*))
