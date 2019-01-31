@@ -1,7 +1,8 @@
 (defpackage #:pukunui/units/core
   (:use #:cl
         #:pukunui/unit
-        #:pukunui/signal)
+        #:pukunui/signal
+        #:pukunui/timeinfo)
   (:import-from #:pukunui/portaudio
                 #:+sample-rate+))
 (in-package #:pukunui/units/core)
@@ -43,3 +44,18 @@
             (incf l l2)
             (incf r r2))
       :finally (return (values l r)))))
+
+(defunit uadsr (unit)
+  ((state :default nil)
+   ((start :export) :default 0)
+   ((a :export) :default 100 :max 10000 :min 0.1 :step 0.01)
+   ((d :export) :default 200 :max 10000 :min 0.1 :step 0.01)
+   ((s :export) :default 0.5 :max 1 :min 0 :step 0.01)
+   ((r :export) :default 400 :max 10000 :min 0.1 :step 0.01))
+  (let* ((state #@uadsr-state)
+         (eplaced (- (timeinfo-tick ti) #@uadsr-start)))
+    (multiple-value-bind (s v)
+        (adsr #@uadsr-a #@uadsr-d #@uadsr-s #@uadsr-r state eplaced)
+      (unless (eq s state)
+        (setf (uadsr-state u) s))
+      (values v v))))

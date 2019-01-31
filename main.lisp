@@ -38,7 +38,7 @@
   (setf (clip-loop-p *ev*) t)
   (setf (clip-playing-p *dr*) t)
   (setf (clip-loop-p *dr*) t)
-  (setf *unit-graph* (create-unit umix 0.7 0)))
+  (setf *unit-graph* (create-unit sine (create-uadsr 44100 200 200 0.5 200) 0)))
 
 (defun init ()
   (setf *paconf* (make-paconf*))
