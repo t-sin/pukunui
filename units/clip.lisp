@@ -23,16 +23,14 @@
            (if (clip-loop-p u)
                (progn
                  (setf (clip-idx u) 1)
-                 (pan (svref lbuf 0)
-                      (svref rbuf 0)
-                      #@unit-pan))
+                 (stereo-mix (svref lbuf 0) (svref rbuf 0) #@unit-gain #@unit-pan))
                (progn
                  (setf (clip-playing-p u) nil)
                  (values 0 0))))
           (t (let ((l (svref lbuf idx))
                    (r (svref rbuf idx)))
                (incf (clip-idx u))
-               (pan l r #@unit-pan))))))
+               (stereo-mix l r #@unit-gain #@unit-pan))))))
 
 (defmethod print-object ((o clip) stream)
   (format stream "#(CLIP :LBUF ~a :RBUF ~a :LOOP-P ~a :PLAYING-P ~a)"

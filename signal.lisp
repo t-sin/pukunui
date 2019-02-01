@@ -5,6 +5,7 @@
            #:mix
            #:mix-2
            #:pan
+           #:stereo-mix
 
            #:2PI
            #:PI/2
@@ -33,6 +34,9 @@
   (cond ((zerop pan) (values l r))
         ((plusp pan) (values (* (- 1 pan) l) r))
         ((minusp pan) (values l (* (+ 1 pan) r)))))
+
+(defun stereo-mix (l r g p)
+  (pan (gain l g) (gain r g) p))
 
 (defconstant 2PI (* 2 PI))
 (defconstant PI/2 (/ PI 2))

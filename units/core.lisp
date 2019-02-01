@@ -13,10 +13,7 @@
    ((pan :export) :default 0 :max 1 :min -1))
   (multiple-value-bind (l r)
       #@unit-src
-    (let ((g #@unit-gain))
-      (pan (gain l g)
-           (gain r g)
-           #@unit-pan))))
+    (stereo-mix l r #@unit-gain #@unit-pan)))
 
 (defunit uoffset (unit)
   (((value :export) :default 0))
@@ -43,7 +40,7 @@
               (calc-unit u ti)
             (incf l l2)
             (incf r r2))
-      :finally (return (values l r)))))
+      :finally (return (stereo-mix l r #@unit-gain #@unit-pan)))))
 
 (defunit uadsr (unit)
   ((state :default nil)
@@ -58,4 +55,4 @@
         (adsr #@uadsr-a #@uadsr-d #@uadsr-s #@uadsr-r state eplaced)
       (unless (eq s state)
         (setf (uadsr-state u) s))
-      (values v v))))
+      (stereo-mix v v #@unit-gain #@unit-pan))))
