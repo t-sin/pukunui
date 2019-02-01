@@ -67,3 +67,6 @@
         ((and (eq state :r) (< eplaced r)) ;; TODO
          (values :r (- s (* eplaced (/ s r)))))
         (t (values nil 0))))
+
+(defun note->freq (n)
+  (* 440 (expt 2 (/ (- n 69) 12))))
