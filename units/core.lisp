@@ -8,7 +8,7 @@
 (in-package #:pukunui/units/core)
 
 (defunit unit ()
-  (((src :export) :default 0 :max 1 :min -1)
+  (((src :export) :default nil)
    ((gain :export) :default 1 :max 1 :min 0)
    ((pan :export) :default 0 :max 1 :min -1))
   (multiple-value-bind (l r)
