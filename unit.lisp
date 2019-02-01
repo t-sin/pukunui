@@ -58,7 +58,7 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun make-slotspec (spec)
-    (let ((new-spec '(:default 0 :max 1 :min 0 :step 0.01)))
+    (let ((new-spec (copy-list '(:default 0 :max 1 :min 0 :step 0.01))))
       (loop
         :for (k v) :on spec :by #'cddr
         :do (setf (getf new-spec k) v))
