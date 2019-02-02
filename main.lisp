@@ -2,7 +2,7 @@
   (:use #:cl
         #:pukunui/portaudio
         #:pukunui/signal
-        #:pukunui/timeinfo
+        #:pukunui/masterinfo
         #:pukunui/unit
 
         #:pukunui/units/core
@@ -17,12 +17,12 @@
 
 (defparameter *unit-graph* nil)
 (defparameter *paconf* nil)
-(defparameter *timeinfo* nil)
+(defparameter *masterinfo* nil)
 
 (defun calc-toplevel ()
   (multiple-value-bind (l r)
-      (calc-unit *unit-graph* *timeinfo*)
-    (update-timeinfo *timeinfo*)
+      (calc-unit *unit-graph* *masterinfo*)
+    (update-masterinfo *masterinfo*)
     (values l r)))
 
 (defparameter *sound-thread* nil)
@@ -40,11 +40,11 @@
     (setf (clip-loop-p *ev*) t)
     (setf (clip-playing-p *dr*) t)
     (setf (clip-loop-p *dr*) t)
-    (setf *unit-graph* (create-unit sine (create-uadsr 44100 1 4000 0.2 4000) 0))))
+    (setf *unit-graph* (create-unit umix 0.5 0))))
 
 (defun init ()
   (setf *paconf* (make-paconf*))
-  (setf *timeinfo* (make-timeinfo*))
+  (setf *masterinfo* (make-masterinfo*))
   (init-ugraph))
 
 (defun start ()

@@ -2,7 +2,7 @@
   (:use #:cl
         #:pukunui/unit
         #:pukunui/signal
-        #:pukunui/timeinfo)
+        #:pukunui/masterinfo)
   (:import-from #:pukunui/portaudio
                 #:+sample-rate+))
 (in-package #:pukunui/units/core)
@@ -50,7 +50,7 @@
    ((s :export) :default 0.5 :max 1 :min 0 :step 0.01)
    ((r :export) :default 400 :max 10000 :min 0.1 :step 0.01))
   (let* ((state #@uadsr-state)
-         (eplaced (- (timeinfo-tick ti) #@uadsr-start)))
+         (eplaced (- (masterinfo-tick ti) #@uadsr-start)))
     (multiple-value-bind (s v)
         (adsr #@uadsr-a #@uadsr-d #@uadsr-s #@uadsr-r state eplaced)
       (unless (eq s state)
