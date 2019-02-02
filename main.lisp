@@ -47,9 +47,10 @@
   (init-ugraph))
 
 (defun start ()
-  (let ((th (bt:make-thread (pastart *masterinfo* #'calc-toplevel)
-                            :name "pukunui-sound-thread")))
-    (setf *sound-thread* th)))
+  (unless *sound-thread*
+    (let ((th (bt:make-thread (pastart *masterinfo* #'calc-toplevel)
+                              :name "pukunui-sound-thread")))
+      (setf *sound-thread* th))))
 
 (defun stop ()
   (bt:destroy-thread *sound-thread*)
