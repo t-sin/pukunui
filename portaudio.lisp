@@ -1,32 +1,13 @@
 (defpackage #:pukunui/portaudio
-  (:use #:cl)
-  (:export #:+frames-per-buffer+
-           #:+sample-rate+
-
-           #:make-paconf
-           #:paconf-frames-per-buffer
-           #:paconf-sample-rate
-           #:make-paconf*
-
-           #:pastart))
+  (:use #:cl
+        #:pukunui/masterinfo)
+  (:export #:pastart))
 (in-package #:pukunui/portaudio)
 
-(defparameter +frames-per-buffer+ 1024)
-(defparameter +sample-rate+ 44100.0D0)
-
-(defstruct paconf
-  frames-per-buffer
-  sample-rate)
-
-(defun make-paconf* (&key (frames +frames-per-buffer+)
-                          (samples +sample-rate+))
-  (make-paconf :frames-per-buffer frames
-               :sample-rate samples))
-
-(defun pastart (paconf signal-fn)
+(defun pastart (masterinfo signal-fn)
   (lambda ()
-    (let ((frames-per-buffer (paconf-frames-per-buffer paconf))
-          (sample-rate (paconf-sample-rate paconf)))
+    (let ((frames-per-buffer (masterinfo-frames-per-buffer masterinfo))
+          (sample-rate (masterinfo-sample-rate masterinfo)))
       (pa:with-audio
         (pa:with-default-audio-stream (stream 0 2
                                               :frames-per-buffer frames-per-buffer

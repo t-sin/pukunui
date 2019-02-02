@@ -1,20 +1,22 @@
 (defpackage #:pukunui/masterinfo
-  (:use #:cl)
+  (:use #:cl
+        #:pukunui/constants)
   (:export #:masterinfo
            #:make-masterinfo
            #:masterinfo-p
            #:masterinfo-tick
            #:masterinfo-bpm
+           #:masterinfo-frames-per-buffer
+           #:masterinfo-sample-rate
 
-           #:make-masterinfo*
            #:update-masterinfo))
 (in-package #:pukunui/masterinfo)
 
 (defstruct masterinfo
-  tick bpm)
-
-(defun make-masterinfo* ()
-  (make-masterinfo :tick 0 :bpm 110))
+  (frames-per-buffer +frames-per-buffer+)
+  (sample-rate +sample-rate+)
+  (bpm +bpm+)
+  (tick 0))
 
 (defun update-masterinfo (masterinfo)
   (incf (masterinfo-tick masterinfo)))

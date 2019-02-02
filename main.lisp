@@ -43,12 +43,11 @@
     (setf *unit-graph* (create-unit umix 0.5 0))))
 
 (defun init ()
-  (setf *paconf* (make-paconf*))
-  (setf *masterinfo* (make-masterinfo*))
+  (setf *masterinfo* (make-masterinfo))
   (init-ugraph))
 
 (defun start ()
-  (let ((th (bt:make-thread (pastart *paconf* #'calc-toplevel)
+  (let ((th (bt:make-thread (pastart *masterinfo* #'calc-toplevel)
                             :name "pukunui-sound-thread")))
     (setf *sound-thread* th)))
 

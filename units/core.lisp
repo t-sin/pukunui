@@ -2,9 +2,7 @@
   (:use #:cl
         #:pukunui/unit
         #:pukunui/signal
-        #:pukunui/masterinfo)
-  (:import-from #:pukunui/portaudio
-                #:+sample-rate+))
+        #:pukunui/masterinfo))
 (in-package #:pukunui/units/core)
 
 (defunit unit ()
@@ -37,7 +35,7 @@
       :with l := 0
       :with r := 0
       :do (multiple-value-bind (l2 r2)
-              (calc-unit u ti)
+              (calc-unit u mi)
             (incf l l2)
             (incf r r2))
       :finally (return (stereo-mix l r #@unit-gain #@unit-pan)))))

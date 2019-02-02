@@ -2,10 +2,7 @@
   (:use #:cl
         #:pukunui/unit
         #:pukunui/signal
-        #:pukunui/units/core)
-  (:import-from #:pukunui/portaudio
-                #:+sample-rate+)
-  (:export #:read-wav))
+        #:pukunui/units/core))
 (in-package #:pukunui/units/clip)
 
 (defunit clip (unit)
