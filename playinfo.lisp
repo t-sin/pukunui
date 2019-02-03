@@ -42,6 +42,8 @@
   (sample-rate +sample-rate+)
   (bpm +bpm+)
   (playback-mode :timeline :type 'playback-mode)
+  (playing-p nil)
+  ;; time
   (tick 0))
 
 (defun update-masterinfo (masterinfo)
