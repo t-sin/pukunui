@@ -2,7 +2,7 @@
   (:use #:cl
         #:pukunui/unit
         #:pukunui/signal
-        #:pukunui/masterinfo))
+        #:pukunui/playinfo))
 (in-package #:pukunui/units/core)
 
 (defunit unit ()
@@ -35,7 +35,7 @@
       :with l := 0
       :with r := 0
       :do (multiple-value-bind (l2 r2)
-              (calc-unit u mi)
+              (calc-unit u pinfo)
             (incf l l2)
             (incf r r2))
       :finally (return (stereo-mix l r #@unit-gain #@unit-pan)))))
@@ -48,7 +48,7 @@
    ((s :export) :default 0.5 :max 1 :min 0 :step 0.01)
    ((r :export) :default 400 :max 10000 :min 0.1 :step 0.01))
   (let* ((state #@uadsr-state)
-         (eplaced (- (masterinfo-tick ti) #@uadsr-start)))
+         (eplaced (- (masterinfo-tick pinfo) #@uadsr-start)))
     (multiple-value-bind (s v)
         (adsr #@uadsr-a #@uadsr-d #@uadsr-s #@uadsr-r state eplaced)
       (unless (eq s state)

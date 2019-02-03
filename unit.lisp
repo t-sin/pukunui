@@ -17,7 +17,7 @@
            #:calc-slot
            #:defunit
            #:u
-           #:mi))
+           #:pinfo))
 (in-package #:pukunui/unit)
 
 (defparameter *unit-id* 0)
@@ -38,21 +38,21 @@
 (defun make-key (u)
   (intern (symbol-name (type-of u)) :keyword))
 
-(defun calc-unit (u mi)
+(defun calc-unit (u pinfo)
   (let ((proc (gethash (make-key u) *unit-proc-map*)))
     (if (null proc)
         (error (format nil "proc for ~s is not defined." u))
-        (funcall proc u mi))))
+        (funcall proc u pinfo))))
 
-(defun calc-slot (s mi)
+(defun calc-slot (s pinfo)
   (typecase s
-    (base-unit (calc-unit s mi))
+    (base-unit (calc-unit s pinfo))
     (t s)))
 
 (defun ref-reader (s c1 c2)
   (declare (ignore c1 c2))
   (let ((name (read s)))
-    `(calc-slot (,name u) mi)))
+    `(calc-slot (,name u) pinfo)))
 
 (set-dispatch-macro-character #\# #\@ #'ref-reader)
 
@@ -109,7 +109,7 @@
            (setf (gethash (base-unit-id ,$unit) pukunui/unit::*unit-map*) ,$unit)))))
 
   (defun make-proc (name body)
-    `(flet ((proc-fn (u mi) (declare (ignorable u mi)) ,@body))
+    `(flet ((proc-fn (u pinfo) (declare (ignorable u pinfo)) ,@body))
        (setf (gethash ,(intern (symbol-name name) :keyword)
                       pukunui/unit::*unit-proc-map*)
              #'proc-fn)))

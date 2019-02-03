@@ -2,7 +2,7 @@
   (:use #:cl
         #:pukunui/portaudio
         #:pukunui/signal
-        #:pukunui/masterinfo
+        #:pukunui/playinfo
         #:pukunui/unit
 
         #:pukunui/units/core

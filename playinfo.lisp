@@ -1,4 +1,4 @@
-(defpackage #:pukunui/masterinfo
+(defpackage #:pukunui/playinfo
   (:use #:cl
         #:pukunui/constants)
   (:export #:playback-mode
@@ -12,7 +12,7 @@
            #:masterinfo-tick
 
            #:update-masterinfo))
-(in-package #:pukunui/masterinfo)
+(in-package #:pukunui/playinfo)
 
 (deftype playback-mode ()
   '(member :timeline :clip))

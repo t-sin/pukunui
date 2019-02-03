@@ -1,6 +1,6 @@
 (defpackage #:pukunui/portaudio
   (:use #:cl
-        #:pukunui/masterinfo)
+        #:pukunui/playinfo)
   (:export #:pastart))
 (in-package #:pukunui/portaudio)
 
