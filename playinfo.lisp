@@ -25,6 +25,12 @@
 (defstruct time
   bar beat pos)
 
+(defun time= (t1 t2)
+  t)
+
+(defun time< (t1 t2)
+  t)
+
 (defun time->tick (time)
   0)
 
