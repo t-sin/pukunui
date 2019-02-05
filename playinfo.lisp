@@ -25,7 +25,9 @@
 (in-package #:pukunui/playinfo)
 
 (defstruct time
-  bar beat pos)
+  (bar 0)
+  (beat 0)
+  (pos 0))
 
 (defun time= (t1 t2)
   (and (= (time-bar t1) (time-bar t2))
@@ -52,7 +54,7 @@
   (bpm +bpm+)
   (playback-mode :timeline :type 'playback-mode)
   (playing-p nil)
-  ;; time
+  (playback-pos (make-time) :type 'time)
   (tick 0))
 
 (defun update-masterinfo (masterinfo)
