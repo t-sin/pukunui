@@ -17,9 +17,6 @@
                 #:pulse))
 (in-package #:pukunui-test/tests/signal)
 
-;;;;
-;; panning
-
 (defun test-gain (s g expected)
   (ok (= (gain s g) expected)))
 
