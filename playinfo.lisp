@@ -7,6 +7,8 @@
            #:time-bar
            #:time-beat
            #:time-pos
+           #:time=
+           #:time<
            #:time->tick
 
            #:playback-mode
@@ -26,10 +28,17 @@
   bar beat pos)
 
 (defun time= (t1 t2)
-  t)
+  (and (= (time-bar t1) (time-bar t2))
+       (= (time-beat t1) (time-beat t2))
+       (= (time-pos t1) (time-pos t2))))
 
 (defun time< (t1 t2)
-  t)
+  (or (< (time-bar t1) (time-bar t2))
+      (and (= (time-bar t1) (time-bar t2))
+           (< (time-beat t1) (time-beat t2)))
+      (and (= (time-bar t1) (time-bar t2))
+           (= (time-beat t1) (time-beat t2))
+           (< (time-pos t1) (time-pos t2)))))
 
 (defun time->tick (time)
   0)
