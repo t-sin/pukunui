@@ -17,8 +17,9 @@
            #:masterinfo-p
            #:masterinfo-frames-per-buffer
            #:masterinfo-sample-rate
-           #:masterinfo-bpm
            #:masterinfo-playback-mode
+           #:masterinfo-bpm
+           #:masterinfo-time
            #:masterinfo-tick
 
            #:update-masterinfo))
@@ -42,7 +43,7 @@
            (= (time-beat t1) (time-beat t2))
            (< (time-pos t1) (time-pos t2)))))
 
-(defun time->tick (time)
+(defun time->tick (time masterinfo)
   0)
 
 (deftype playback-mode ()
@@ -51,11 +52,17 @@
 (defstruct masterinfo
   (frames-per-buffer +frames-per-buffer+)
   (sample-rate +sample-rate+)
-  (bpm +bpm+)
   (playback-mode :timeline :type 'playback-mode)
   (playing-p nil)
-  (playback-pos (make-time) :type 'time)
+  (bpm +bpm+)
+  (time (make-time) :type 'time)
   (tick 0))
 
+(defun update-time (masterinfo)
+  (let* ((sample-rate (masterinfo-sample-rate masterinfo))
+         (bpm (masterinfo-bpm masterinfo)))
+    masterinfo))
+
 (defun update-masterinfo (masterinfo)
-  (incf (masterinfo-tick masterinfo)))
+  (incf (masterinfo-tick masterinfo))
+  (update-time masterinfo))
