@@ -1,14 +1,14 @@
 (defpackage #:pukunui/playinfo
   (:use #:cl
         #:pukunui/constants)
-  (:export #:time
-           #:make-time
-           #:time-p
-           #:time-bar
-           #:time-beat
-           #:time-pos
-           #:time=
-           #:time<
+  (:export #:timepos
+           #:make-timepos
+           #:timepos-p
+           #:timepos-bar
+           #:timepos-beat
+           #:timepos-pos
+           #:timepos=
+           #:timepos<
            #:time->tick
 
            #:playback-mode
@@ -17,52 +17,66 @@
            #:masterinfo-p
            #:masterinfo-frames-per-buffer
            #:masterinfo-sample-rate
-           #:masterinfo-playback-mode
+           #:masterinfo-mode
            #:masterinfo-bpm
-           #:masterinfo-time
+           #:masterinfo-timepos
            #:masterinfo-tick
 
            #:update-masterinfo))
 (in-package #:pukunui/playinfo)
 
-(defstruct time
+(defstruct timepos
   (bar 0)
   (beat 0)
   (pos 0))
 
-(defun time= (t1 t2)
-  (and (= (time-bar t1) (time-bar t2))
-       (= (time-beat t1) (time-beat t2))
-       (= (time-pos t1) (time-pos t2))))
+(defstruct measure
+  (beat 4)
+  (note 4))
 
-(defun time< (t1 t2)
-  (or (< (time-bar t1) (time-bar t2))
-      (and (= (time-bar t1) (time-bar t2))
-           (< (time-beat t1) (time-beat t2)))
-      (and (= (time-bar t1) (time-bar t2))
-           (= (time-beat t1) (time-beat t2))
-           (< (time-pos t1) (time-pos t2)))))
+(defun timepos= (t1 t2)
+  (and (= (timepos-bar t1) (timepos-bar t2))
+       (= (timepos-beat t1) (timepos-beat t2))
+       (= (timepos-pos t1) (timepos-pos t2))))
 
-(defun time->tick (time masterinfo)
+(defun timepos< (t1 t2)
+  (or (< (timepos-bar t1) (timepos-bar t2))
+      (and (= (timepos-bar t1) (timepos-bar t2))
+           (< (timepos-beat t1) (timepos-beat t2)))
+      (and (= (timepos-bar t1) (timepos-bar t2))
+           (= (timepos-beat t1) (timepos-beat t2))
+           (< (timepos-pos t1) (timepos-pos t2)))))
+
+(defun timepos->tick (timepos masterinfo)
   0)
 
 (deftype playback-mode ()
-  '(member :timeline :clip))
+  '(and keyword (member :timeline :clip)))
 
 (defstruct masterinfo
   (frames-per-buffer +frames-per-buffer+)
   (sample-rate +sample-rate+)
   (playback-mode :timeline :type 'playback-mode)
   (playing-p nil)
+  (measure (make-measure))
   (bpm +bpm+)
-  (time (make-time) :type 'time)
+  (timepos (make-timepos) :type 'timepos)
   (tick 0))
 
-(defun update-time (masterinfo)
+(defun update-tick (masterinfo)
   (let* ((sample-rate (masterinfo-sample-rate masterinfo))
-         (bpm (masterinfo-bpm masterinfo)))
-    masterinfo))
+         (bpm (masterinfo-bpm masterinfo))
+         (timepos (masterinfo-timepos masterinfo))
+         (measure (masterinfo-measure masterinfo))
+         (diff-beat (/ (* 60 bpm) sample-rate)))
+    (let* ((new-pos (+ (timepos-pos timepos) diff-beat))
+           (new-beat (+ (timepos-beat timepos) (floor new-pos 1)))
+           (new-bar (+ (timepos-bar timepos) (floor new-beat (measure-beat measure)))))
+      (setf (timepos-pos timepos) (floor new-pos 1)
+            (timepos-beat timepos) (floor new-beat (measure-note measure))
+            (timepos-bar timepos) (floor new-bar (measure-beat measure)))))
+    masterinfo)
 
 (defun update-masterinfo (masterinfo)
   (incf (masterinfo-tick masterinfo))
-  (update-time masterinfo))
+  (update-tick masterinfo))
