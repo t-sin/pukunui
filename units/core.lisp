@@ -27,6 +27,19 @@
         #@unit-src
       (values (* l val) (* r val)))))
 
+(defunit umultiply (unit)
+  ()
+  (let ((ulis #@unit-src))
+    (loop
+      :for u :across ulis
+      :with l := 1
+      :with r := 1
+      :do (multiple-value-bind (l2 r2)
+              (calc-unit u pinfo)
+            (setf l (* l l2)
+                  r (* r r2)))
+      :finally (return (stereo-mix l r #@unit-gain #@unit-pan)))))
+
 (defunit umix (unit)
   ()
   (let ((ulis #@unit-src))
@@ -51,6 +64,6 @@
          (eplaced (- (masterinfo-tick pinfo) #@uadsr-start)))
     (multiple-value-bind (s v)
         (adsr #@uadsr-a #@uadsr-d #@uadsr-s #@uadsr-r state eplaced)
-      (unless (eq s state)
-        (setf (uadsr-state u) s))
+      (unless (eq :s state)
+        (setf (uadsr-state u) :s))
       (stereo-mix v v #@unit-gain #@unit-pan))))
