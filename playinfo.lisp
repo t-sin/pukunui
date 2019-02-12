@@ -75,7 +75,7 @@
       (multiple-value-bind (q new-beat)
           (floor (+ (timepos-beat timepos) q) (measure-note measure))
         (setf (timepos-beat timepos) new-beat)
-        (incf (timepos-bar timepos) q)))
+        (incf (timepos-bar timepos) q))))
   masterinfo)
 
 (defun update-masterinfo (masterinfo)
