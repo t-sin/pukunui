@@ -34,7 +34,7 @@
 
 (defunit useq (unit)
   (((seq :export) :default nil)
-   (saw :default (create-saw 440))
+   (pulse :default (create-pulse 440 0.25))
    (adsr :default (create-uadsr 0 100 100 1 100))
    (multi :default (create-umultiply)))
   (let ((timepos (masterinfo-timepos pinfo))
@@ -45,7 +45,7 @@
       (when (and ev (timepos< (nth 0 ev) timepos))
         (ecase (nth 1 ev)
           (:on (setf (uadsr-state (useq-adsr u)) :a
-                     (saw-freq (useq-saw u)) (nth 2 ev)
+                     (pulse-freq (useq-pulse u)) (nth 2 ev)
                      (uadsr-start (useq-adsr u)) tick))
           (:off (setf (uadsr-state (useq-adsr u)) :r
                       (uadsr-start (useq-adsr u)) tick)))
@@ -69,10 +69,10 @@
                (,(make-timepos :bar 1 :beat 3 :pos 0) :on ,(note->freq 44))
                (,(make-timepos :bar 1 :beat 3 :pos 0.25) :off)))
        (seq (create-useq seq*)))
-  (let ((saw (useq-saw seq))
+  (let ((pulse (useq-pulse seq))
         (adsr (useq-adsr seq))
         (multi (useq-multi seq)))
-    (setf (unit-src multi) (vector saw adsr))
+    (setf (unit-src multi) (vector pulse adsr))
     (defparameter *seq* seq)))
 
 (defun init-ugraph ()
