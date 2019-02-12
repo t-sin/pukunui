@@ -68,7 +68,7 @@
          (bpm (masterinfo-bpm masterinfo))
          (timepos (masterinfo-timepos masterinfo))
          (measure (masterinfo-measure masterinfo))
-         (diff-beat (/ (* 60 bpm) sample-rate)))
+         (diff-beat (/ bpm 60 sample-rate)))
     (multiple-value-bind (q new-pos)
         (floor (+ (timepos-pos timepos) diff-beat) 1)
       (setf (timepos-pos timepos) new-pos)
