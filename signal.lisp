@@ -15,7 +15,10 @@
            #:saw
            #:pulse
 
-           #:adsr))
+           #:adsr
+
+           #:sym->freq
+           #:note->freq))
 (in-package #:pukunui/signal)
 
 (defun gain (s g)
@@ -71,6 +74,9 @@
         ((and (eq state :r) (< eplaced r)) ;; TODO
          (values :r (- s (* eplaced (/ s r)))))
         (t (values nil 0))))
+
+(defun sym->freq (sym)
+  440)
 
 (defun note->freq (n)
   (* 440 (expt 2 (/ (- n 69) 12))))
