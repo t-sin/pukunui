@@ -30,7 +30,13 @@
 (defparameter *ev* (read-wav (asdf:system-relative-pathname :pukunui "ev.wav")))
 (defparameter *dr* (read-wav (asdf:system-relative-pathname :pukunui "dr.wav")))
 
-(defmacro defdevice ())
+;;; WIP
+(defmacro defdevice (name (&rest params) (&rest units) methods)
+  `(progn
+     (defunit dname (,@params ,@units)
+       ,(getf methods :proc))
+     (defun create-dname (,@params)
+       ,@(getf methods :init))))
 
 (defunit useq (unit)
   (((seq :export) :default nil)
