@@ -62,7 +62,7 @@
 
 (defun adsr (a d s r state eplaced)
   (cond ((minusp eplaced) (values nil 0))
-        ((and (member state '(nil :a)) (< eplaced a))
+        ((and (eq state :a) (< eplaced a))
          (values :a (/ eplaced a)))
         ((and (member state '(:a :d)) (< eplaced (+ a d)))
          (values :d (- 1 (* (- 1 s) (/ (- eplaced a) d)))))
