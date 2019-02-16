@@ -5,6 +5,9 @@
   :depends-on ("bit-smasher"
                "bit-ops"
 
+               "queues"
+               "queues.simple-cqueue"
+
                "cl-portaudio"
                "cl-wav"
 

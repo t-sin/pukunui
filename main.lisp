@@ -10,6 +10,11 @@
         #:pukunui/units/oscillator
 
         #:pukunui/pcm)
+  (:import-from #:queues
+                #:make-queue
+                #:qtop
+                #:qpop
+                #:qpush)
   (:export #:init
            #:start
            #:stop))
@@ -39,13 +44,13 @@
        ,@(getf methods :init))))
 
 (defunit useq (unit)
-  (((seq :export) :default nil)
+  (((seq :export) :default (make-queue :simple-cqueue))
    (pulse :default (create-pulse 440 0.25))
    (adsr :default (create-uadsr 0 100 100 1 100))
    (multi :default (create-umultiply)))
   (let ((timepos (masterinfo-timepos pinfo))
         (tick (masterinfo-tick pinfo))
-        (ev (car (useq-seq u))))
+        (ev (qtop (useq-seq u))))
     (multiple-value-bind (l r)
         (calc-unit (useq-multi u) pinfo)
       (when (and ev (timepos< (nth 0 ev) timepos))
@@ -55,10 +60,10 @@
                      (uadsr-start (useq-adsr u)) tick))
           (:off (setf (uadsr-state (useq-adsr u)) :r
                       (uadsr-start (useq-adsr u)) tick)))
-        (pop (useq-seq u)))
+        (qpop (useq-seq u)))
       (values l r))))
 
-(let* ((seq* `((,(make-timepos :bar 0 :beat 0 :pos 0) :on ,(note->freq 48))
+(let* ((%seq `((,(make-timepos :bar 0 :beat 0 :pos 0) :on ,(note->freq 48))
                (,(make-timepos :bar 0 :beat 0 :pos 0.25) :off)
                (,(make-timepos :bar 0 :beat 1 :pos 0) :on ,(note->freq 46))
                (,(make-timepos :bar 0 :beat 1 :pos 0.25) :off)
@@ -74,10 +79,12 @@
                (,(make-timepos :bar 1 :beat 2 :pos 0.25) :off)
                (,(make-timepos :bar 1 :beat 3 :pos 0) :on ,(note->freq 44))
                (,(make-timepos :bar 1 :beat 3 :pos 0.25) :off)))
-       (seq (create-useq seq*)))
+       (cq (make-queue :simple-cqueue))
+       (seq (create-useq cq)))
   (let ((pulse (useq-pulse seq))
         (adsr (useq-adsr seq))
         (multi (useq-multi seq)))
+    (loop :for e :in %seq :do (qpush cq e))
     (setf (unit-src multi) (vector pulse adsr))
     (defparameter *seq* seq)))
 
