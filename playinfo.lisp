@@ -7,6 +7,7 @@
            #:timepos-bar
            #:timepos-beat
            #:timepos-pos
+           #:timepos+
            #:timepos=
            #:timepos<
            #:time->tick
@@ -33,6 +34,17 @@
 (defstruct measure
   (beat 4)
   (note 4))
+
+(defun timepos+ (t1 t2 measure)
+  (let ((new-timepos (make-timepos)))
+    (multiple-value-bind (quot new-pos)
+        (floor (+ (timepos-pos t1) (timepos-pos t2)) 1)
+      (setf (timepos-pos new-timepos) new-pos)
+      (multiple-value-bind (quot new-beat)
+          (floor (+ (timepos-beat t1) (timepos-beat t2) quot) (measure-note measure))
+        (setf (timepos-beat new-timepos) new-beat
+              (timepos-bar new-timepos) (+ (timepos-bar t1) (timepos-bar t2) quot))))
+    new-timepos))
 
 (defun timepos= (t1 t2)
   (and (= (timepos-bar t1) (timepos-bar t2))
