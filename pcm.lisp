@@ -1,6 +1,6 @@
 (defpackage #:pukunui/pcm
   (:use #:cl
-        #:pukunui/units/clip)
+        #:pukunui/units/sample)
   (:import-from #:bit-smasher
                 #:bits->int
                 #:int->bits)
@@ -43,5 +43,5 @@
                   (r2 (aref dat (+ i 3))))
               (setf (aref lbuf (/ i 4)) (16bit->float l1 l2 bits/sample)
                     (aref rbuf (/ i 4)) (16bit->float r1 r2 bits/sample))))
-      (create-clip (coerce lbuf 'simple-vector)
+      (create-sample (coerce lbuf 'simple-vector)
                    (coerce rbuf 'simple-vector) nil))))

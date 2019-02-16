@@ -6,7 +6,7 @@
         #:pukunui/unit
 
         #:pukunui/units/core
-        #:pukunui/units/clip
+        #:pukunui/units/sample
         #:pukunui/units/oscillator
 
         #:pukunui/pcm)
