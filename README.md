@@ -9,8 +9,10 @@ Sound experiments Pukunui.
 - [x] insert modulator as a unit slot value
 - [x] WAV file playback
 - [x] audio playback thread
-- [ ] timeline information (like 'bar')
-- [ ] sequencers
+- [x] timeline information (like 'bar')
+- [x] experimental sequencers
+- [ ] devices -- large and compound units
+- [ ] tracks
 
 ## Installation
 
