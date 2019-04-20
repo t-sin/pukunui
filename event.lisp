@@ -1,7 +1,14 @@
 (defpackage #:pukunui/event
   (:use #:cl
         #:pukunui/unit
+        #:pukunui/units/core
+        #:pukunui/units/oscillator
         #:pukunui/playinfo)
+  (:import-from #:queues
+                #:make-queue
+                #:qtop
+                #:qpop
+                #:qpush)
   (:export #:clip
            #:make-clip
            #:clip-p
@@ -9,7 +16,7 @@
            #:clip-len
            #:clip-events
 
-           #:create-useq))
+           #:create-useq*))
 (in-package #:pukunui/event)
 
 (defstruct clip
@@ -37,12 +44,12 @@
         (qpop (useq-queue u)))
       (values l r))))
 
-(defun create-useq (init-seq)
-  (let ((cq (make-queue :simple-cqueue))
-        (seq (create-useq cq)))
-    (let ((pulse (useq-pulse seq))
-          (adsr (useq-adsr seq))
-          (multi (useq-multi seq)))
-      (loop :for e :in init-seq :do (qpush cq e))
-      (setf (unit-src multi) (vector pulse adsr))
-      seq)))
+(defun create-useq* (init-seq)
+  (let* ((cq (make-queue :simple-cqueue))
+         (seq (create-useq cq))
+         (pulse (useq-pulse seq))
+         (adsr (useq-adsr seq))
+         (multi (useq-multi seq)))
+    (loop :for e :in init-seq :do (qpush cq e))
+    (setf (unit-src multi) (vector pulse adsr))
+    seq))

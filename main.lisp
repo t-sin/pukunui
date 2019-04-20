@@ -5,16 +5,13 @@
         #:pukunui/playinfo
         #:pukunui/unit
 
+        #:pukunui/event
+
         #:pukunui/units/core
         #:pukunui/units/sample
         #:pukunui/units/oscillator
 
         #:pukunui/pcm)
-  (:import-from #:queues
-                #:make-queue
-                #:qtop
-                #:qpop
-                #:qpush)
   (:export #:init
            #:start
            #:stop))
@@ -56,8 +53,7 @@
 (defun init-ugraph ()
   (let ((umix (create-umix))
         (sine (create-sine 880))
-        ;;(seq (create-useq %seq%))
-        )
+        (seq (create-useq* %seq%)))
     (setf (unit-gain sine) 0.3)
     (setf (unit-src umix) (vector *ev* *dr*))
     (setf (unit-pan umix) (create-sine 10))
@@ -65,7 +61,7 @@
     (setf (sample-loop-p *ev*) t)
     (setf (sample-playing-p *dr*) t)
     (setf (sample-loop-p *dr*) t)
-    (setf *unit-graph* (create-unit *ev* 0.5 0))))
+    (setf *unit-graph* (create-unit seq 0.5 0))))
 
 (defun init ()
   (setf *masterinfo* (make-masterinfo))
