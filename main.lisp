@@ -32,7 +32,7 @@
 (defparameter *ev* (read-wav (asdf:system-relative-pathname :pukunui "ev.wav")))
 (defparameter *dr* (read-wav (asdf:system-relative-pathname :pukunui "dr.wav")))
 
-(defparameter %seq%
+(defparameter *space-invador-seq*
   `((,(make-timepos :bar 0 :beat 0 :pos 0) :on ,(note->freq 48))
     (,(make-timepos :bar 0 :beat 0 :pos 0.25) :off)
     (,(make-timepos :bar 0 :beat 1 :pos 0) :on ,(note->freq 46))
@@ -53,7 +53,7 @@
 (defun init-ugraph ()
   (let ((umix (create-umix))
         (sine (create-sine 880))
-        (seq (create-useq* %seq%)))
+        (seq (create-useq* *space-invador-seq*)))
     (setf (unit-gain sine) 0.3)
     (setf (unit-src umix) (vector *ev* *dr*))
     (setf (unit-pan umix) (create-sine 10))
