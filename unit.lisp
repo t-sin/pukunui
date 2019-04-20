@@ -1,5 +1,6 @@
 (defpackage #:pukunui/unit
-  (:use #:cl)
+  (:use #:cl
+        #:pukunui/playinfo)
   (:export #:slot-spec
            #:make-slot-spec
            #:slot-spec-p
@@ -33,16 +34,22 @@
           (slot-spec-default s) (slot-spec-max s) (slot-spec-min s) (slot-spec-step s)))
 
 (defstruct base-unit
-  id last-tick)
+  id (last-tick -1) (val '(0 0)))
 
 (defun make-key (u)
   (intern (symbol-name (type-of u)) :keyword))
 
 (defun calc-unit (u pinfo)
-  (let ((proc (gethash (make-key u) *unit-proc-map*)))
-    (if (null proc)
-        (error (format nil "proc for ~s is not defined." u))
-        (funcall proc u pinfo))))
+  (if (= (base-unit-last-tick u) (masterinfo-tick pinfo))
+      (apply #'values (base-unit-val u))
+      (let ((proc (gethash (make-key u) *unit-proc-map*)))
+        (if (null proc)
+            (error (format nil "proc for ~s is not defined." u))
+            (multiple-value-bind (l r)
+                (funcall proc u pinfo)
+              (setf (base-unit-val u) (list l r)
+                    (base-unit-last-tick u) (masterinfo-tick pinfo))
+              (values l r))))))
 
 (defun calc-slot (s pinfo)
   (typecase s
