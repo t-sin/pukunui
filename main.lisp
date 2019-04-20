@@ -29,8 +29,8 @@
 
 (defparameter *sound-thread* nil)
 
-(defparameter *ev* (read-wav (asdf:system-relative-pathname :pukunui "ev.wav")))
-(defparameter *dr* (read-wav (asdf:system-relative-pathname :pukunui "dr.wav")))
+(defparameter *ev* (read-wav (asdf:system-relative-pathname :pukunui "resouces/ev.wav")))
+(defparameter *dr* (read-wav (asdf:system-relative-pathname :pukunui "resouces/dr.wav")))
 
 (defparameter *space-invador-seq*
   `((,(make-timepos :bar 0 :beat 0 :pos 0) :on ,(note->freq 48))
