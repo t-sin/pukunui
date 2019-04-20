@@ -5,11 +5,12 @@
         #:pukunui/playinfo
         #:pukunui/unit
 
-        #:pukunui/event
-
         #:pukunui/units/core
         #:pukunui/units/sample
         #:pukunui/units/oscillator
+        #:pukunui/units/effect
+
+        #:pukunui/event
 
         #:pukunui/pcm)
   (:export #:init
@@ -53,7 +54,9 @@
 (defun init-ugraph ()
   (let ((umix (create-umix))
         (sine (create-sine 880))
-        (seq (create-useq* *space-invador-seq*)))
+        (seq (create-useq* *space-invador-seq*))
+        (delay (create-delay-1* 22100 5 0.8)))
+        ;; (delay (create-delay* 44100)))
     (setf (unit-gain sine) 0.3)
     (setf (unit-src umix) (vector *ev* *dr*))
     (setf (unit-pan umix) (create-sine 10))
@@ -61,7 +64,11 @@
     (setf (sample-loop-p *ev*) t)
     (setf (sample-playing-p *dr*) t)
     (setf (sample-loop-p *dr*) t)
-    (setf *unit-graph* (create-unit seq 0.5 0))))
+
+    ;; (setf (unit-src delay) (create-unit seq 0.5 0))
+    ;; (setf (delay-tap delay) 22000)
+    (set-delay-1-src delay (create-unit seq 0.5 0))
+    (setf *unit-graph* delay)))
 
 (defun init ()
   (setf *masterinfo* (make-masterinfo))
