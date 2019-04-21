@@ -34,6 +34,7 @@
 (defunit delay (unit)
   ((lbuf :default nil)
    (rbuf :default nil)
+   (size :default 44100)
    ((tap :export) :default 0))
   (multiple-value-bind (l r)
       #@unit-src
@@ -42,46 +43,48 @@
     (values (rbref (delay-lbuf u) #@delay-tap)
             (rbref (delay-rbuf u) #@delay-tap))))
 
-(defun create-delay* (size)
-  (let ((delay (create-delay 0)))
+(defun create-delay* (&optional size)
+  (let* ((delay (create-delay 0))
+         (size (if size
+                   size
+                   (delay-size delay))))
     (setf (delay-lbuf delay) (make-ring-buffer* size))
     (setf (delay-rbuf delay) (make-ring-buffer* size))
     delay))
 
+(defun update-taps (taps bufsize dtime pinfo)
+  ;; dtimeに合わせてtapの位置を調整したいなあ
+  taps)
+
 (defunit delay-1 (unit)
   ((size)
-   (delays)
-   (dnum)
+   (time)
+   (delay)
+   (taps)
    ((mix :export) :default 0))
-  (let ((size (delay-1-size u))
-        (dlis #@delay-1-delays)
-        (dnum #@delay-1-dnum)
-        (mix #@delay-1-mix))
-    (loop
-      :for d :across dlis
-      :for n :from 0 :upto dnum
-      :with l := 0
-      :with r := 0
-      :do (setf (delay-tap d) (* n (/ size dnum)))
-      :do (multiple-value-bind (l2 r2)
-              (calc-unit d pinfo)
-            (incf l (gain l2 (* mix (/ n dnum))))
-            (incf r (gain r2 (* mix (/ n dnum)))))
-      :finally (return (values l r)))))
+  (let* ((bufsize (delay-1-size u))
+         (dtime (delay-1-time u))
+         (delay (delay-1-delay u))
+         (taps #@delay-1-taps)
+         (mix #@delay-1-mix)
+         (rdiff (/ (1+ (length taps)))))
+    (multiple-value-bind (l r)
+        #@unit-src
+      (update-taps taps bufsize dtime pinfo)
+      (rbpush l (delay-lbuf delay))
+      (rbpush r (delay-rbuf delay))
+      (loop
+        :for tap :across taps
+        :for ratio := (- 1 rdiff) :then (- ratio rdiff)
+        :do (incf l (gain (rbref (delay-lbuf delay) tap) (* mix ratio)))
+        :do (incf r (gain (rbref (delay-rbuf delay) tap) (* mix ratio))))
+      (values l r))))
 
-(defun set-delay-1-src (delay-1 src)
-  (let ((delays (delay-1-delays delay-1)))
-    (loop
-      :for d :across delays
-      :do (setf (unit-src d) src))))
-
-(defun create-delay-1* (size tapnum mix)
+(defun create-delay-1* (time mix &optional (size (* 44100 10)))
   (let ((d (create-delay-1 mix))
-        (delays (apply #'vector
-                       (loop
-                         :for n :from 0 :below tapnum
-                         :collect (create-delay* size)))))
-    (setf (delay-1-delays d) delays)
-    (setf (delay-1-dnum d) tapnum)
+        (taps (apply #'vector (loop :for n :from 0 :below 5 :collect (* 10000 n)))))
+    (setf (delay-1-delay d) (create-delay* size))
+    (setf (delay-1-taps d) taps)
+    (setf (delay-1-time d) time)
     (setf (delay-1-size d) size)
     d))

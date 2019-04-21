@@ -55,7 +55,7 @@
   (let ((umix (create-umix))
         (sine (create-sine 880))
         (seq (create-useq* *space-invador-seq*))
-        (delay (create-delay-1* 22100 5 0.8)))
+        (delay (create-delay-1* 0.5 0.1)))
         ;; (delay (create-delay* 44100)))
     (setf (unit-gain sine) 0.3)
     (setf (unit-src umix) (vector *ev* *dr*))
@@ -65,9 +65,7 @@
     (setf (sample-playing-p *dr*) t)
     (setf (sample-loop-p *dr*) t)
 
-    ;; (setf (unit-src delay) (create-unit seq 0.5 0))
-    ;; (setf (delay-tap delay) 22000)
-    (set-delay-1-src delay (create-unit seq 0.5 0))
+    (setf (unit-src delay) (create-unit seq 0.5 0))
     (setf *unit-graph* delay)))
 
 (defun init ()
