@@ -22,3 +22,18 @@
   (setf (sample-playing-p ev) t)
   (setf (unit-gain ev) 0.8)
   (pukunui:init ev))
+
+;; play two samples
+(let ((ev (read-wav (asdf:system-relative-pathname :pukunui "resouces/ev.wav")))
+      (dr (read-wav (asdf:system-relative-pathname :pukunui "resouces/dr.wav")))
+      (mixer (create-umix)))
+  (setf (sample-loop-p ev) t)
+  (setf (sample-playing-p ev) t)
+  (setf (unit-gain ev) 0.8)
+
+  (setf (sample-loop-p dr) t)
+  (setf (sample-playing-p dr) t)
+  (setf (unit-gain dr) 0.8)
+
+  (setf (unit-src mixer) (vector ev dr))
+  (pukunui:init mixer))
