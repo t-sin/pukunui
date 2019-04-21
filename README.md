@@ -1,6 +1,6 @@
 # Pukunui
 
-Sound experiments Pukunui.
+Sound experiments; Pukunui
 
 ## TODOs
 
