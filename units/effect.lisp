@@ -82,7 +82,7 @@
 
 (defun create-delay-1* (time mix &optional (size (* 44100 10)))
   (let ((d (create-delay-1 mix))
-        (taps (apply #'vector (loop :for n :from 0 :below 5 :collect (* 10000 n)))))
+        (taps (apply #'vector (loop :for n :from 0 :below 5 :collect (* 6500 n)))))
     (setf (delay-1-delay d) (create-delay* size))
     (setf (delay-1-taps d) taps)
     (setf (delay-1-time d) time)
