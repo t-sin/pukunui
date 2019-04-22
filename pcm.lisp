@@ -16,7 +16,7 @@
          (pad (make-array (- w (length b)) :initial-element 0)))
     (concatenate `(bit-vector ,w) pad b)))
 
-(defconstant +sign-bit-16+ (int->bits #x8000))
+(defvar +sign-bit-16+ (int->bits #x8000))
 
 (defun 16bit->float (lsb msb bits/sample)
   (let ((b (make-bitvec (+ (ash msb 8) lsb) 16)))
