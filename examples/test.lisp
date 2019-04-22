@@ -36,6 +36,7 @@
       (sine (create-sine 880))
       (seq (create-useq* *space-invador-seq* 10 10 1 0))
       (delay (create-delay-1* 0.5 0.1)))
+  (setf (masterinfo-bpm pukunui::*masterinfo*) 80)
 
   (setf (unit-gain sine) 0.3)
   (setf (unit-src umix) (vector *ev* *dr*))
