@@ -16,7 +16,8 @@
            #:clip-len
            #:clip-events
 
-           #:create-useq*))
+           #:create-useq*
+           #:create-unseq*))
 (in-package #:pukunui/event)
 
 (defstruct clip
@@ -56,4 +57,36 @@
     (setf (uadsr-s adsr) s)
     (setf (uadsr-r adsr) r)
     (setf (unit-src multi) (vector pulse adsr))
+    seq))
+
+(defunit unseq (unit)
+  (((queue :export) :default (make-queue :simple-cqueue))
+   (rand :default (create-rand))
+   (adsr :default (create-uadsr 0 100 100 1 100))
+   (multi :default (create-umultiply)))
+  (let ((timepos (masterinfo-timepos pinfo))
+        (tick (masterinfo-tick pinfo))
+        (ev (qtop (unseq-queue u))))
+    (multiple-value-bind (l r)
+        (calc-unit (unseq-multi u) pinfo)
+      (when (and ev (timepos< (nth 0 ev) timepos))
+        (ecase (nth 1 ev)
+          (:on (setf (uadsr-state (unseq-adsr u)) :a
+                     (uadsr-start (unseq-adsr u)) tick))
+          (:off (setf (uadsr-state (unseq-adsr u)) :r
+                      (uadsr-start (unseq-adsr u)) tick)))
+        (qpop (unseq-queue u)))
+      (values l r))))
+
+(defun create-unseq* (init-seq a d s r)
+  (let* ((cq (make-queue :simple-cqueue))
+         (seq (create-unseq cq))
+         (adsr (unseq-adsr seq))
+         (multi (unseq-multi seq)))
+    (loop :for e :in init-seq :do (qpush cq e))
+    (setf (uadsr-a adsr) a)
+    (setf (uadsr-d adsr) d)
+    (setf (uadsr-s adsr) s)
+    (setf (uadsr-r adsr) r)
+    (setf (unit-src multi) (vector (unseq-rand seq) adsr))
     seq))
