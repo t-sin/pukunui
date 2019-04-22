@@ -34,7 +34,7 @@
 
 (let ((umix (create-umix))
       (sine (create-sine 880))
-      (seq (create-useq* *space-invador-seq*))
+      (seq (create-useq* *space-invador-seq* 10 10 1 0))
       (delay (create-delay-1* 0.5 0.1)))
 
   (setf (unit-gain sine) 0.3)
@@ -45,5 +45,5 @@
   (setf (sample-playing-p *dr*) t)
   (setf (sample-loop-p *dr*) t)
 
-  (setf (unit-src delay) (create-unit seq 0.5 0))
-  (pukunui:init delay))
+  (setf (unit-src delay) (create-unit seq 0.3 0))
+  (pukunui:init (create-unit seq 0.2 0)))
