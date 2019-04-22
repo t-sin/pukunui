@@ -10,6 +10,11 @@
   ((ph :default 0)
    ((init-ph :export) :default 0)))
 
+(defunit rand (osc)
+  ()
+  (let ((v (- (random 2) 1)))
+    (values v v)))
+
 (defunit sine (osc)
   (((freq :export) :default 440 :max 20000 :min 0.05 :step 0.01))
   (let ((v (sin (+ #@osc-ph #@osc-init-ph))))
