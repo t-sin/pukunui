@@ -21,7 +21,7 @@
   (pukunui:init *dr*))
 
 ;; play a drum sample with delay
-(let ((delay (create-delay-1* 0.5 0.2)))
+(let ((delay (create-delay-1* 0.8 0.5)))
   (setf (sample-idx *dr*) 0)
   (setf (sample-loop-p *dr*) t)
   (setf (sample-playing-p *dr*) t)
