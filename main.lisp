@@ -32,7 +32,6 @@
 
 (defun init (&optional (ugraph (create-uzero)))
   (setf *masterinfo* (make-masterinfo))
-  (setf (masterinfo-bpm *masterinfo*) 80)
   (setf *unit-graph* ugraph))
 
 (defun start ()
