@@ -9,6 +9,8 @@
                :pukunui/units/sample
                :pukunui/event))
 
+(defparameter *ev* (read-wav (asdf:system-relative-pathname :pukunui "resouces/ev.wav")))
+
 ;; sine wave simply
 (let ((sine (create-sine 440)))
   (setf (unit-gain sine) 0.3)
@@ -18,6 +20,22 @@
 (let ((sine (create-sine 440)))
   (setf (unit-gain sine) (create-sine 5))
   (pukunui:init sine))
+
+;; sample loop with AM
+(progn
+  (setf (sample-idx *ev*) 0)
+  (setf (sample-loop-p *ev*) t)
+  (setf (sample-playing-p *ev*) t)
+  (setf (unit-gain *ev*) (create-sine 5))
+  (pukunui:init *ev*))
+
+;; rotary speaker
+(progn
+  (setf (sample-idx *ev*) 0)
+  (setf (sample-loop-p *ev*) t)
+  (setf (sample-playing-p *ev*) t)
+  (setf (unit-pan *ev*) (create-sine 5))
+  (pukunui:init *ev*))
 
 ;; sine wave with frequency modulation (FM)
 (let* ((offset (create-uoffset 440))
