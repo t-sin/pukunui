@@ -13,6 +13,10 @@
       #@unit-src
     (stereo-mix l r #@unit-gain #@unit-pan)))
 
+(defunit uzero (unit)
+  ()
+  (values 0 0))
+
 (defunit uoffset (unit)
   (((value :export) :default 0))
   (let ((val #@uoffset-value))

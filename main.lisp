@@ -30,7 +30,7 @@
 
 (defparameter *sound-thread* nil)
 
-(defun init (ugraph)
+(defun init (&optional (ugraph (create-uzero)))
   (setf *masterinfo* (make-masterinfo))
   (setf (masterinfo-bpm *masterinfo*) 80)
   (setf *unit-graph* ugraph))
