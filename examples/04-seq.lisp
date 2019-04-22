@@ -38,10 +38,37 @@
     (,(make-timepos :bar 4 :beat 0 :pos 0) :on ,(note->freq 72))
     (,(make-timepos :bar 4 :beat 3 :pos 0) :off)))
 
-;; GameBoy
+(defparameter *snare-seq*
+  `((,(make-timepos :bar 0 :beat 3 :pos 0) :on)
+    (,(make-timepos :bar 0 :beat 3 :pos 0.5) :on)
+    (,(make-timepos :bar 0 :beat 3 :pos 0.75) :on)
+    ,@(loop
+        :for n :from 1 :upto 4
+        :append `(,@(loop
+                      :for m :from 0 :upto 2
+                      :append `((,(make-timepos :bar n :beat m :pos 0) :on)
+                                (,(make-timepos :bar n :beat m :pos 0.5) :on)
+                                (,(make-timepos :bar n :beat m :pos 0.75) :on)))
+                  (,(make-timepos :bar n :beat 3 :pos 0) :on)
+                  (,(make-timepos :bar n :beat 3 :pos 0.25) :on)
+                  (,(make-timepos :bar n :beat 3 :pos 0.5) :on)
+                  (,(make-timepos :bar n :beat 3 :pos 0.75) :on)))))
+
+;; gb
 (let* ((seq (create-useq* *gb-seq* 30 30000 0.2 0)))
   (pukunui:init (create-unit seq 0.2 0) 60))
 
-;; Kirby 1
+;; kb
 (let* ((seq (create-useq* *kb-seq* 30 30000 0.2 0)))
   (pukunui:init (create-unit seq 0.2 0) 150))
+
+;; snare
+(let* ((seq (create-unseq* *snare-seq* 30 3000 0 0)))
+  (pukunui:init (create-unit seq 0.2 0) 150))
+
+;; kb2
+(let* ((seq1 (create-useq* *kb-seq* 30 30000 0.2 0))
+       (seq2 (create-unseq* *snare-seq* 30 3000 0 0))
+       (mixer (create-umix)))
+  (setf (unit-src mixer) (vector seq1 seq2))
+  (pukunui:init (create-unit mixer 0.2 0) 150))
