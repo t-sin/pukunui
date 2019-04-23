@@ -26,7 +26,7 @@
   (setf (sample-loop-p *ev*) t)
   (setf (sample-playing-p *ev*) t)
   (setf (unit-gain *ev*) 0.8)
-  (pukunui:init *ev*)
+  (pukunui:init *ev*))
 
 ;; play two samples
 (let ((mixer (create-umix)))
