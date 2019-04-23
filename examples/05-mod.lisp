@@ -47,3 +47,8 @@
   (pukunui:init sine))
 
 ;; TODO: レトロなアレ
+(let* ((sine1 (create-sine 440))
+       (sine2 (create-sine 440)))
+  (setf (osc-init-ph sine1) (create-sine 80))
+  (setf (unit-gain sine1) 0.3)
+  (pukunui:init sine1))
