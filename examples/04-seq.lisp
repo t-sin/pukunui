@@ -79,21 +79,27 @@
                   (,(make-timepos :bar n :beat 3 :pos 0.75) :on)))))
 
 ;; gb
-(let* ((seq (create-useq* *gb-seq* 30 30000 0.2 0)))
+(let* ((osc (create-pulse 0.25))
+       (seq (create-useq* *gb-seq* osc 30 30000 0.2 0)))
   (pukunui:init (create-unit seq 0.2 0) 60))
 
 ;; kb
-(let* ((seq (create-useq* *kb-seq* 30 30000 0.2 0)))
+(let* ((osc (create-pulse 0.25))
+       (seq (create-useq* *kb-seq* osc 30 30000 0.2 0)))
   (pukunui:init (create-unit seq 0.2 0) 150))
 
 ;; snare
-(let* ((seq (create-unseq* *snare-seq* 30 3000 0 0)))
+(let* ((osc (create-rand))
+       (seq (create-useq* *snare-seq* osc 30 3000 0 0)))
   (pukunui:init (create-unit seq 0.2 0) 150))
 
 ;; kb2
-(let* ((seq1 (create-useq* *kb-seq* 30 30000 0.2 0))
-       (seq2 (create-useq* *bass-seq* 30 10000 0.5 0))
-       (seq3 (create-unseq* *snare-seq* 30 3000 0 0))
+(let* ((osc1 (create-pulse 0.25))
+       (seq1 (create-useq* *kb-seq* osc1 30 30000 0.2 0))
+       (osc2 (create-pulse 0.5))
+       (seq2 (create-useq* *bass-seq* osc2 30 10000 0.5 0))
+       (osc3 (create-rand))
+       (seq3 (create-useq* *snare-seq* osc3 30 3000 0 0))
        (mixer (create-umix)))
   (setf (unit-src mixer) (vector seq1 seq2 seq3))
   (pukunui:init (create-unit mixer 0.2 0) 150))
