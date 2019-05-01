@@ -1,6 +1,10 @@
 (defpackage #:klos/klass
   (:use #:cl)
-  (:export #:make-klass
+  (:export #:klass
+           #:klass-name
+           #:klass-slotmap
+           #:klass-slotdefs
+           #:make-klass
            #:find-klass
            #:find-klass-by-id))
 (in-package #:klos/klass)
