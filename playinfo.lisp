@@ -68,11 +68,11 @@
 (defstruct masterinfo
   (frames-per-buffer +frames-per-buffer+)
   (sample-rate +sample-rate+)
-  (playback-mode :timeline :type 'playback-mode)
+  (playback-mode :timeline :type playback-mode)
   (playing-p nil)
   (measure (make-measure))
   (bpm +bpm+)
-  (timepos (make-timepos) :type 'timepos)
+  (timepos (make-timepos) :type timepos)
   (tick 0))
 
 (defun update-timepos (masterinfo)
