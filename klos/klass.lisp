@@ -1,17 +1,14 @@
-(defpackage #:klos
+(defpackage #:klos/klass
   (:use #:cl)
   (:export #:make-klass
            #:find-klass
            #:find-klass-by-id))
-(in-package #:klos)
-
-;;;; Klasses
-;;
-;; (because the name `find-class` is predefined by CCL)
+(in-package #:klos/klass)
 
 (defstruct slotdef
   (pred nil :type function))
 
+;; (because the name `find-class` is predefined by CCL)
 (defstruct (klass (:constructor %make-klass))
   (id 0 :type fixnum)
   (name :nil :type keyword)
