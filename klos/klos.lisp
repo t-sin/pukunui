@@ -10,14 +10,14 @@
 ;; (because the name `find-class` is predefined by CCL)
 
 (defstruct slotdef
-  (pred nil :type 'function))
+  (pred nil :type function))
 
 (defstruct (klass (:constructor %make-klass))
-  (id 0 :type 'fixnum)
-  (name :nil :type 'keyword)
+  (id 0 :type fixnum)
+  (name :nil :type keyword)
   (supers nil :type t)
-  (slotmap nil :type 'hash-table)
-  (slotdefs nil :type 'slotdef))
+  (slotmap nil :type hash-table)
+  (slotdefs nil :type slotdef))
 
 (defparameter *klass-limit* 2000)
 (defparameter *klass-id* 0)
