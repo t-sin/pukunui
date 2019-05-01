@@ -14,7 +14,7 @@
   (name :nil :type keyword)
   (supers nil :type t)
   (slotmap nil :type hash-table)
-  (slotdefs nil :type slotdef))
+  (slotdefs nil :type simple-vector))
 
 (defparameter *klass-limit* 2000)
 (defparameter *klass-id* 0)
