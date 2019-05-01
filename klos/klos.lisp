@@ -57,7 +57,7 @@
                     (getf (cdr slotdef) :pred))))
     (unless (keywordp name)
       (error (format nil "name ~s must be a keyword." name)))
-    (unless (or (null pred)) (functionp pred)
+    (unless (or (null pred) (functionp pred))
       (error (format nil ":pred must be a function.")))
     (values name
             (make-slotdef :pred pred))))
