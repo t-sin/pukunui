@@ -18,16 +18,16 @@ The KLOS (Kiwi Lightweight Object System) will be raise to define class things t
 
 - KLOS stores class definition in an array (`*class-table*`)
     - for performance; old object system in Pukunui probably has an issue about method dispatching
-- L1: class definition API
+- [x] L1: class definition API
     - `make-class`
     - `find-class`: name -> class definition
-- L2: instances API
+- [ ] L2: instances API
     - `instantiate`: name :keyword params -> object
     - `class-of`: object -> class definition
     - `slot-value`: object slot-name -> value
-- L3: method API
+- [ ] L3: method API
     - `make-generic-method`
     - `dispatch-method`
-- L4: macros
+- [ ] L4: macros
     - `defclass`
     - `with-slots`
