@@ -1,10 +1,10 @@
 (defpackage #:klos
-  (:use #:cl)
-  (:import-from #:klos/klass
-                #:make-klass
-                #:find-klass
-                #:find-klass-by-id)
-  (:export #:make-klass
-           #:find-klass
-           #:find-klass-by-id))
+  (:use)
+  (:import-from #:klos/class
+                #:make-class
+                #:find-class
+                #:find-class-by-id)
+  (:export #:make-class
+           #:find-class
+           #:find-class-by-id))
 (in-package #:klos)
